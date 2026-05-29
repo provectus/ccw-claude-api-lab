@@ -1,41 +1,21 @@
 {
   "schema_version": "1.0",
   "name": "pa_criteria_rules",
-  "description": "Structural and eligibility validation rules applied by validate_clinical_criteria against a canonical PA request.",
-  "cpt_code": {
-    "pattern": "^[0-9]{5}$",
-    "description": "CPT/HCPCS must be exactly 5 digits."
-  },
-  "icd10_code": {
-    "pattern": "^[A-TV-Z][0-9][0-9A-Z](\\.[0-9A-Z]{1,4})?$",
-    "description": "ICD-10-CM format, e.g. M54.50."
-  },
-  "npi": {
-    "pattern": "^[0-9]{10}$",
-    "description": "NPI must be exactly 10 digits."
-  },
-  "patient": {
-    "min_age": 0,
-    "max_age": 120,
-    "allowed_plan_types": ["HMO", "PPO", "Medicare Advantage", "Medicaid"]
-  },
-  "procedure": {
-    "allowed_place_of_service": ["11", "22", "24"],
-    "description": "11 office, 22 on-campus outpatient hospital, 24 ambulatory surgical center."
-  },
-  "diagnoses": {
-    "require_primary": true,
-    "description": "Exactly one diagnosis must be marked primary."
-  },
-  "clinical": {
-    "required_fields": [
-      "indication",
-      "conservative_tx_weeks",
-      "physical_therapy_completed",
-      "prior_imaging",
-      "mechanical_symptoms",
-      "neuro_deficit"
-    ],
-    "description": "All clinical fields must be present (non-null) for a complete request."
-  }
+  "description": "Structural and eligibility validation rules applied by validate_clinical_criteria.",
+  "_TODO_step_4": [
+    "Fill in the rule values below. validate_clinical_criteria (Step 7) reads them via load_criteria_rules().",
+    "cpt_code.pattern: 5-digit regex. icd10_code.pattern: ICD-10 regex. npi.pattern: 10-digit regex.",
+    "patient: min_age, max_age, allowed_plan_types[].",
+    "procedure.allowed_place_of_service[].",
+    "diagnoses.require_primary (bool).",
+    "clinical.required_fields[].",
+    "The `healthcare-solution` branch holds the reference values."
+  ],
+  "cpt_code": {"pattern": "^[0-9]{5}$", "description": "CPT/HCPCS must be 5 digits."},
+  "icd10_code": {"pattern": null, "description": "TODO: ICD-10-CM regex."},
+  "npi": {"pattern": null, "description": "TODO: 10-digit NPI regex."},
+  "patient": {"min_age": null, "max_age": null, "allowed_plan_types": []},
+  "procedure": {"allowed_place_of_service": []},
+  "diagnoses": {"require_primary": null},
+  "clinical": {"required_fields": []}
 }

@@ -33,38 +33,16 @@ _REQUIRED_TOP = ["request_id", "patient", "procedure", "diagnoses", "ordering_pr
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Read request.json (+ clinical_notes.txt) and assemble a canonical PARequest."""
-    folder = Path(input_data["folder_path"])
-    if not folder.exists() or not folder.is_dir():
-        return {"error": f"PA request folder not found: {folder}"}
+    """Read request.json (+ clinical_notes.txt) and assemble a canonical PARequest.
 
-    request_path = folder / "request.json"
-    if not request_path.exists():
-        return {"error": f"Missing request.json in {folder}"}
+    TODO (Step 6 — Build Tool 1):
+      1. Resolve `input_data["folder_path"]`; confirm it exists and has request.json.
+      2. Load request.json (json.loads). Warn for any missing `_REQUIRED_TOP` section.
+      3. If `clinical_notes.txt` exists, merge its text into `request["clinical"]["notes"]`.
+      4. Return safe_json_serialize({request, parse_warnings, cpt_code,
+         diagnosis_count, source_folder}).
 
-    request = json.loads(request_path.read_text())
-    warnings: list[str] = []
-
-    for key in _REQUIRED_TOP:
-        if key not in request:
-            warnings.append(f"Missing top-level section: {key}")
-
-    # Merge free-text clinical notes if present.
-    notes_path = folder / "clinical_notes.txt"
-    if notes_path.exists():
-        notes = notes_path.read_text().strip()
-        request.setdefault("clinical", {})
-        existing = request["clinical"].get("notes", "")
-        request["clinical"]["notes"] = (existing + "\n" + notes).strip() if existing else notes
-    else:
-        warnings.append("No clinical_notes.txt found; proceeding with structured fields only")
-
-    cpt = request.get("procedure", {}).get("cpt_code")
-
-    return safe_json_serialize({
-        "request": request,
-        "parse_warnings": warnings,
-        "cpt_code": cpt,
-        "diagnosis_count": len(request.get("diagnoses", [])),
-        "source_folder": folder.name,
-    })
+    See tests/test_pa_tools.py::TestParsePARequest for the exact contract; the
+    reference implementation is on the `healthcare-solution` branch.
+    """
+    raise NotImplementedError("TODO (Step 6): implement parse_pa_request")

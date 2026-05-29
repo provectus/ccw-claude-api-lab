@@ -49,35 +49,17 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Validate and assemble the final determination. Deterministic — no model call."""
-    decision = input_data.get("decision")
-    validation_notes: list[str] = []
+    """Validate and assemble the final determination. Deterministic — no model call.
 
-    if decision not in _DECISIONS:
-        return {"error": f"decision must be one of {sorted(_DECISIONS)}, got {decision!r}"}
+    TODO (Step 9 — Build Tool 4):
+      This is the agent's FINAL tool — its return becomes the pipeline assessment.
+      1. Reject an out-of-enum `decision` (not in _DECISIONS) with {"error": ...}.
+      2. Coerce + clamp `confidence` into [0, 1], noting any clamp.
+      3. Flag a `pend_for_info` with no `required_documentation`; force
+         `authorization_validity_days` to 0 unless the decision is `approve`.
+      4. Return safe_json_serialize({decision, rationale, required_documentation,
+         authorization_validity_days, confidence, validation_notes}).
 
-    confidence = input_data.get("confidence", 0.0)
-    try:
-        confidence = float(confidence)
-    except (TypeError, ValueError):
-        confidence = 0.0
-    if confidence < 0 or confidence > 1:
-        validation_notes.append(f"confidence {confidence} clamped to [0, 1]")
-        confidence = max(0.0, min(1.0, confidence))
-
-    required_docs = input_data.get("required_documentation") or []
-    if decision == "pend_for_info" and not required_docs:
-        validation_notes.append("pend_for_info returned with no required_documentation listed")
-
-    validity = input_data.get("authorization_validity_days", 0)
-    if decision != "approve" and validity:
-        validation_notes.append("authorization_validity_days is only meaningful for an approval")
-
-    return safe_json_serialize({
-        "decision": decision,
-        "rationale": input_data.get("rationale", ""),
-        "required_documentation": required_docs,
-        "authorization_validity_days": validity if decision == "approve" else 0,
-        "confidence": round(confidence, 2),
-        "validation_notes": validation_notes,
-    })
+    See tests/test_pa_tools.py::TestRecommendDecision for the contract.
+    """
+    raise NotImplementedError("TODO (Step 9): implement recommend_decision")

@@ -33,42 +33,17 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Deterministically evaluate the CPT policy criteria against the request."""
-    req = input_data.get("request") or {}
-    cpt = str((req.get("procedure") or {}).get("cpt_code", ""))
-    policies = load_payer_policies()["policies"]
+    """Deterministically evaluate the CPT policy criteria against the request.
 
-    policy = policies.get(cpt)
-    if policy is None:
-        return safe_json_serialize({
-            "policy_found": False,
-            "cpt_code": cpt,
-            "meets_policy": False,
-            "note": f"No medical-necessity policy on file for CPT {cpt}; route to manual clinical review.",
-        })
+    TODO (Step 8 — Build Tool 3):
+      1. Read the procedure's CPT and look it up in `load_payer_policies()["policies"]`.
+      2. If no policy exists, return {policy_found: False, meets_policy: False, ...}
+         (route to manual review — do NOT auto-deny).
+      3. For each criterion, resolve the value with `get_path(req, crit["path"])` and
+         test it with `eval_criterion(actual, crit["op"], crit["value"])`.
+      4. Return safe_json_serialize({policy_found, cpt_code, procedure, criteria[],
+         criteria_met, criteria_total, meets_policy (= all met), unmet_criteria}).
 
-    results = []
-    for crit in policy["criteria"]:
-        actual = get_path(req, crit["path"])
-        met = eval_criterion(actual, crit["op"], crit["value"])
-        results.append({
-            "id": crit["id"],
-            "name": crit["name"],
-            "requirement": f"{crit['path']} {crit['op']} {crit['value']}",
-            "actual": actual,
-            "met": met,
-        })
-
-    met_count = sum(1 for r in results if r["met"])
-    total = len(results)
-
-    return safe_json_serialize({
-        "policy_found": True,
-        "cpt_code": cpt,
-        "procedure": policy["description"],
-        "criteria": results,
-        "criteria_met": met_count,
-        "criteria_total": total,
-        "meets_policy": met_count == total,
-        "unmet_criteria": [r["name"] for r in results if not r["met"]],
-    })
+    See tests/test_pa_tools.py::TestCheckPayerPolicy for the contract.
+    """
+    raise NotImplementedError("TODO (Step 8): implement check_payer_policy")

@@ -9,10 +9,12 @@ FastAPI backend + React 19 frontend over SSE.
 
 See [README.md](README.md) for setup, the tool list, and sample data.
 
-**This is the `healthcare-solution` branch — the finished reference / answer key.** The
-**`healthcare`** starter branch stubs the four tool `execute()` bodies, the system prompt, and
-the schemas as fill-in-the-blank TODOs. Architecture (plumbing) is shared with the `main`
-(loan-underwriting) and `finance` branches; only the domain layer differs.
+**This is the `healthcare` STARTER branch.** The four tool `execute()` bodies are
+`NotImplementedError` TODOs, and `prompts/clinical_reviewer.md` + the three `schemas/*.json`
+files are fill-in-the-blank skeletons (search `TODO` / `_TODO_step_4`). `NAME`/`DEFINITION`,
+the agent loop, registry, `_common` helpers, sample data, and tests are in place. The finished
+reference is on the **`healthcare-solution`** branch. Plumbing is shared with `main`
+(loan-underwriting) and `finance`; only the domain layer differs.
 
 ## Dev Commands
 
@@ -40,12 +42,15 @@ cd ../frontend && npm install && npm run dev   # :3000
 
 ## Status / Gotchas
 
-- Backend domain layer is complete and tested; the **frontend** still carries the upstream
-  finance-demo's NAV visualization components (generic streaming works; domain viz does not).
-- `frontend/e2e/*.spec.ts` are inherited NAV Playwright tests, not part of backend `pytest`.
-- `check_payer_policy` is deterministic: `meets_policy` is true only when every criterion in
-  the CPT's policy passes. `incomplete_request` (no primary dx, missing clinical fields)
-  intentionally exercises the validation / pend-for-info path.
+- **Starter branch:** `pytest` is intentionally partly red out of the box — `test_pa_tools.py`
+  and the schema-loader tests fail until the learner implements Steps 4–9. The plumbing tests
+  pass. That red/green split is the workshop's progress meter, not breakage.
+- The app boots and streams immediately; tool calls return `NotImplementedError` until implemented.
+- `check_payer_policy` (once implemented) is deterministic: `meets_policy` is true only when
+  every criterion in the CPT's policy passes. `incomplete_request` exercises the validation path.
+- The **frontend** still carries the upstream finance-demo's NAV visualization components
+  (generic streaming works; domain viz does not). `frontend/e2e/*.spec.ts` are inherited NAV
+  Playwright tests, not part of backend `pytest`.
 - The pipeline run-request field is still named `fund_metadata` (a generic "request metadata"
   holdover shared across all branches' plumbing).
 
