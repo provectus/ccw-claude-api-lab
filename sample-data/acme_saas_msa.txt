@@ -1,0 +1,27 @@
+MASTER SERVICES AGREEMENT
+
+This Master Services Agreement ("Agreement") is entered into by and between Acme Cloud Inc. and Customer as of the Effective Date, January 1, 2026. This Agreement is governed by the laws of the State of Delaware.
+
+1. SERVICES
+Acme Cloud Inc. ("Provider") will provide Customer access to its cloud software platform and related support services as described in one or more Order Forms.
+
+2. TERM AND TERMINATION
+The initial term of this Agreement is 12 months from the Effective Date. This Agreement may be renewed only by the mutual written agreement of both parties; it does not renew automatically. Either party may terminate this Agreement for material breach upon 30 days written notice if the breach remains uncured. Customer may terminate this Agreement for convenience upon 30 days written notice.
+
+3. FEES AND PAYMENT
+Fees are set out in the applicable Order Form. Invoices are due net 30 days from the invoice date.
+
+4. INTELLECTUAL PROPERTY
+As between the parties, Customer shall own all Customer Data. Provider retains all rights in the platform and underlying technology.
+
+5. CONFIDENTIALITY
+Each party shall protect the other party's Confidential Information using no less than reasonable care and shall use it solely to perform under this Agreement.
+
+6. INDEMNIFICATION
+Each party shall indemnify and hold harmless the other party against third-party claims arising from its breach of this Agreement or its gross negligence. This indemnification obligation is mutual.
+
+7. LIMITATION OF LIABILITY
+Except for breaches of confidentiality or indemnification obligations, each party's total aggregate liability shall not exceed the total fees paid by Customer in the 12 months preceding the claim. Neither party shall be liable for indirect or consequential damages.
+
+8. GOVERNING LAW
+This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict-of-laws principles.

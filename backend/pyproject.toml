@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ccw-claude-api-lab-backend"
 version = "0.1.0"
-description = "Claude API Lab — Commercial Loan Underwriting Agent (workshop backend)"
+description = "Claude API Lab — SaaS Contract Review Agent (workshop backend)"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
@@ -28,6 +28,13 @@ dev = [
     "pytest>=8",
     "pytest-asyncio>=0.24",
     "httpx>=0.28",
+]
+# Optional fallback PDF parsers for parse_contract_pdf(method=...). NOT required —
+# the default method uses Claude's native PDF support. Install with:
+#   uv pip install -e ".[parsers]"
+parsers = [
+    "docling>=2.0",      # local, ZDR-safe extraction
+    "llama-parse>=0.5",  # cloud extraction (needs LLAMA_CLOUD_API_KEY)
 ]
 
 [tool.setuptools.packages.find]

@@ -30,8 +30,8 @@ def pipeline():
     return PipelineState(
         id="test-pipeline",
         status="pending",
-        file_paths=["/data/acme_widgets"],
-        metadata={"business_name": "Acme Widgets", "purpose": "equipment"},
+        file_paths=["/data/acme_saas_msa.pdf"],
+        metadata={"counterparty": "Acme Cloud Inc.", "doc_type": "SaaS MSA"},
     )
 
 
@@ -54,12 +54,12 @@ class TestBuildInitialMessage:
         assert "/b.pdf" in msg
 
     def test_includes_metadata(self):
-        msg = _build_initial_message([], {"business_name": "Acme Widgets"})
-        assert "Acme Widgets" in msg
+        msg = _build_initial_message([], {"counterparty": "Acme Cloud Inc."})
+        assert "Acme Cloud Inc." in msg
 
-    def test_mentions_underwriting(self):
-        msg = _build_initial_message(["/data/acme_widgets"], {})
-        assert "underwrite" in msg.lower() or "loan" in msg.lower()
+    def test_mentions_contract(self):
+        msg = _build_initial_message(["/data/acme_saas_msa.pdf"], {})
+        assert "contract" in msg.lower() or "review" in msg.lower()
 
 
 class TestRunAgent:
@@ -89,19 +89,19 @@ class TestRunAgent:
         mock_client.messages.create.side_effect = [
             _make_response(
                 [
-                    _make_text_block("Let me parse the loan package."),
-                    _make_tool_use_block("parse_loan_package", {"folder_path": "/data/acme_widgets"}),
+                    _make_text_block("Let me parse the contract."),
+                    _make_tool_use_block("parse_contract_pdf", {"file_path": "/data/acme_saas_msa.pdf"}),
                 ],
                 stop_reason="tool_use",
             ),
             _make_response(
-                [_make_text_block("Package parsed successfully.")],
+                [_make_text_block("Contract parsed successfully.")],
                 stop_reason="end_turn",
             ),
         ]
 
         mock_exec.return_value = {
-            "result": {"years_parsed": 3, "application": {}},
+            "result": {"char_count": 1200, "text": "..."},
             "source": "live",
         }
 
@@ -130,28 +130,28 @@ class TestRunAgent:
     @patch("app.services.agent_runner.execute_tool_with_fallback")
     @patch("app.services.agent_runner.anthropic.AsyncAnthropic")
     async def test_assessment_captured(self, mock_cls, mock_exec, agent_settings, pipeline):
-        """assess_creditworthiness result is saved to pipeline.assessment."""
+        """generate_review_memo result is saved to pipeline.assessment."""
         mock_client = AsyncMock()
         mock_cls.return_value = mock_client
 
         assessment_data = {
-            "recommendation": "approve",
-            "confidence": 0.88,
+            "recommendation": "negotiate",
+            "confidence": 0.85,
         }
 
         mock_client.messages.create.side_effect = [
             _make_response(
                 [
                     _make_tool_use_block(
-                        "assess_creditworthiness",
-                        {"recommendation": "approve"},
-                        block_id="tu_assess",
+                        "generate_review_memo",
+                        {"recommendation": "negotiate"},
+                        block_id="tu_memo",
                     ),
                 ],
                 stop_reason="tool_use",
             ),
             _make_response(
-                [_make_text_block("Assessment complete.")],
+                [_make_text_block("Memo complete.")],
                 stop_reason="end_turn",
             ),
         ]
@@ -180,7 +180,7 @@ class TestAgentRunnerIntegration:
             pytest.skip("ANTHROPIC_API_KEY not set")
 
         sample = Path(__file__).resolve().parent.parent.parent / "sample-data"
-        if not (sample / "acme_widgets" / "profile.json").exists():
+        if not (sample / "acme_saas_msa.pdf").exists():
             pytest.skip("Sample data not present")
 
         return Settings(
@@ -199,12 +199,10 @@ class TestAgentRunnerIntegration:
         return PipelineState(
             id="integration-test",
             status="pending",
-            file_paths=[str(sample / "acme_widgets")],
+            file_paths=[str(sample / "acme_saas_msa.pdf")],
             metadata={
-                "business_name": "Acme Widgets Manufacturing",
-                "requested_amount": 750000,
-                "requested_term_months": 60,
-                "purpose": "equipment",
+                "counterparty": "Acme Cloud Inc.",
+                "doc_type": "SaaS MSA",
             },
         )
 
@@ -225,10 +223,10 @@ class TestAgentRunnerIntegration:
         ]
         tool_names = {e["tool"] for e in tool_results}
         expected_tools = {
-            "parse_loan_package",
-            "validate_loan_application",
-            "compute_credit_ratios",
-            "assess_creditworthiness",
+            "parse_contract_pdf",
+            "extract_clauses",
+            "evaluate_clause_risk",
+            "generate_review_memo",
         }
         assert expected_tools.issubset(tool_names), (
             f"Missing tools: {expected_tools - tool_names}"

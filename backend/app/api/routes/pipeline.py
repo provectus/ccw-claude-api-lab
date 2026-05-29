@@ -156,56 +156,31 @@ async def get_pipeline_assessment(pipeline_id: str):
 
 @router.get("/scenarios", include_in_schema=True)
 async def get_scenarios():
-    """Return pre-configured demo loan packages with folder paths to sample data."""
+    """Return pre-configured demo contracts with file paths to sample data."""
     settings = get_settings()
     sample = settings.sample_data_dir
 
     return {
         "scenarios": [
             {
-                "id": "acme_widgets",
-                "name": "Acme Widgets Mfg. — Equipment Loan",
+                "id": "acme_saas_msa",
+                "name": "Acme Cloud MSA — market-standard",
                 "description": (
-                    "$750K equipment loan for a profitable widget manufacturer with growing "
-                    "revenue, healthy margins, and pledged equipment collateral. Clean approve case."
+                    "A reasonably balanced SaaS MSA: mutual indemnification, a fees-based "
+                    "liability cap, customer termination for convenience. Low/medium risk."
                 ),
-                "file_paths": [str(sample / "acme_widgets")],
-                "fund_metadata": {
-                    "business_name": "Acme Widgets Manufacturing",
-                    "requested_amount": 750_000,
-                    "requested_term_months": 60,
-                    "purpose": "equipment",
-                },
+                "file_paths": [str(sample / "acme_saas_msa.pdf")],
+                "fund_metadata": {"counterparty": "Acme Cloud Inc.", "doc_type": "SaaS MSA"},
             },
             {
-                "id": "bravo_logistics",
-                "name": "Bravo Logistics — Working Capital",
+                "id": "vendorco_msa",
+                "name": "VendorCo MSA — hidden auto-renewal trap",
                 "description": (
-                    "$1.2M working-capital line for a freight broker with declining revenue and "
-                    "thinning coverage. Marginal — likely approve-with-conditions."
+                    "A vendor-favorable MSA: auto-renews unless cancelled 90 days out, one-sided "
+                    "indemnification, no customer termination for convenience. High risk — negotiate."
                 ),
-                "file_paths": [str(sample / "bravo_logistics")],
-                "fund_metadata": {
-                    "business_name": "Bravo Logistics LLC",
-                    "requested_amount": 1_200_000,
-                    "requested_term_months": 36,
-                    "purpose": "working_capital",
-                },
-            },
-            {
-                "id": "charlie_retail",
-                "name": "Charlie Retail Group — Expansion (incomplete)",
-                "description": (
-                    "$2M expansion loan with a missing year of financials — exercises the "
-                    "validation error path."
-                ),
-                "file_paths": [str(sample / "charlie_retail")],
-                "fund_metadata": {
-                    "business_name": "Charlie Retail Group",
-                    "requested_amount": 2_000_000,
-                    "requested_term_months": 84,
-                    "purpose": "expansion",
-                },
+                "file_paths": [str(sample / "vendorco_msa.pdf")],
+                "fund_metadata": {"counterparty": "VendorCo LLC", "doc_type": "SaaS MSA"},
             },
         ]
     }

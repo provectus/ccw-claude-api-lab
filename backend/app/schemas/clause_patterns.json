@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "name": "clause_patterns",
+  "description": "Heading keyword patterns (case-insensitive regex) extract_clauses uses to locate each clause section in the contract text.",
+  "clauses": {
+    "term": ["TERM", "TERM AND TERMINATION"],
+    "auto_renewal": ["RENEWAL", "AUTO.?RENEW", "AUTOMATIC RENEWAL"],
+    "payment_terms": ["PAYMENT", "FEES", "FEES AND PAYMENT"],
+    "liability_cap": ["LIMITATION OF LIABILITY", "LIABILITY"],
+    "indemnification": ["INDEMNIF"],
+    "ip_assignment": ["INTELLECTUAL PROPERTY", "OWNERSHIP", "IP RIGHTS"],
+    "termination": ["TERMINATION"],
+    "confidentiality": ["CONFIDENTIAL"],
+    "governing_law": ["GOVERNING LAW", "JURISDICTION"]
+  }
+}

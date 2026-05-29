@@ -1,1 +1,1 @@
-"""NAV review tool modules."""
+"""SaaS contract-review tool modules."""

@@ -1,4 +1,4 @@
-"""Shared test fixtures for loan-underwriting tool tests."""
+"""Shared test fixtures for contract-review tool tests."""
 
 from pathlib import Path
 
@@ -30,37 +30,28 @@ def sample_data_dir():
 
 
 @pytest.fixture
-def sample_loan_application():
-    """A complete, valid canonical LoanApplication for tool tests."""
-    return {
-        "borrower_id": "TEST-0001",
-        "business_name": "Test Manufacturing Co",
-        "industry_naics": "333249",
-        "requested_amount": 750000,
-        "requested_term_months": 60,
-        "purpose": "equipment",
-        "collateral": {"type": "equipment", "appraised_value": 1100000},
-        "financials": [
-            {
-                "fiscal_year": 2022, "revenue": 3200000, "cogs": 1920000,
-                "opex": 900000, "ebitda": 380000, "net_income": 250000,
-                "total_assets": 2300000, "total_liabilities": 1050000, "equity": 1250000,
-                "cash": 250000, "accounts_receivable": 430000, "inventory": 400000,
-                "current_assets": 1150000, "current_liabilities": 620000,
-            },
-            {
-                "fiscal_year": 2023, "revenue": 3650000, "cogs": 2150000,
-                "opex": 980000, "ebitda": 450000, "net_income": 330000,
-                "total_assets": 2550000, "total_liabilities": 1100000, "equity": 1450000,
-                "cash": 300000, "accounts_receivable": 470000, "inventory": 440000,
-                "current_assets": 1270000, "current_liabilities": 660000,
-            },
-            {
-                "fiscal_year": 2024, "revenue": 4100000, "cogs": 2380000,
-                "opex": 1050000, "ebitda": 520000, "net_income": 430000,
-                "total_assets": 2800000, "total_liabilities": 1150000, "equity": 1650000,
-                "cash": 350000, "accounts_receivable": 520000, "inventory": 480000,
-                "current_assets": 1400000, "current_liabilities": 700000,
-            },
-        ],
-    }
+def sample_contract_text():
+    """Vendor-favorable MSA text (mirrors vendorco_msa) for deterministic extraction tests."""
+    src = _SAMPLE_DATA_DIR / "vendorco_msa.txt"
+    if src.exists():
+        return src.read_text()
+    # Fallback inline copy so tests don't depend on the .txt being present.
+    return (
+        "MASTER SERVICES AGREEMENT\n\n"
+        "This Master Services Agreement is entered into by and between VendorCo LLC and "
+        "Customer as of the Effective Date, March 15, 2026.\n\n"
+        "2. TERM AND TERMINATION\n"
+        "The initial term is 24 months. Thereafter, this Agreement shall automatically renew "
+        "for successive 24-month periods unless either party provides written notice of "
+        "non-renewal at least 90 days prior to the end of the then-current term. Vendor may "
+        "terminate for convenience upon 30 days notice; Customer has no right to terminate for "
+        "convenience.\n\n"
+        "5. INDEMNIFICATION\n"
+        "Customer shall indemnify, defend, and hold harmless Vendor from any and all claims. "
+        "Vendor provides no reciprocal indemnification.\n\n"
+        "6. LIMITATION OF LIABILITY\n"
+        "Vendor's total aggregate liability shall not exceed the fees paid in the three (3) "
+        "months preceding the claim. In no event shall Vendor be liable for consequential damages.\n\n"
+        "7. GOVERNING LAW\n"
+        "This Agreement shall be governed by the laws of the State of New York.\n"
+    )

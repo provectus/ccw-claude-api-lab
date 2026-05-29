@@ -27,13 +27,13 @@ async def get_stats():
         files_processed += len(pipeline.file_paths)
 
         for event in pipeline.events:
-            # Count years of financials parsed from parse_loan_package results
+            # Count clauses extracted from extract_clauses results
             if (
                 event.get("type") == "tool_result"
-                and event.get("tool") == "parse_loan_package"
+                and event.get("tool") == "extract_clauses"
                 and isinstance(event.get("output"), dict)
             ):
-                records_validated += event["output"].get("years_parsed", 0)
+                records_validated += len(event["output"].get("clauses_found", []))
 
     # Average completion time for completed pipelines
     avg_seconds = 0.0

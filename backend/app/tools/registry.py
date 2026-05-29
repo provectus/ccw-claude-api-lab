@@ -1,4 +1,4 @@
-"""Tool registry — collects all loan-underwriting tool modules and provides dispatch.
+"""Tool registry — collects all contract-review tool modules and provides dispatch.
 
 To add a tool: implement a module exporting NAME, DEFINITION, and async execute(),
 then import it and append it to _TOOL_MODULES below. Order here is the order the
@@ -7,17 +7,17 @@ tools are advertised to Claude.
 
 from app.config import Settings
 from app.tools import (
-    parse_loan_package,
-    validate_loan_application,
-    compute_credit_ratios,
-    assess_creditworthiness,
+    parse_contract_pdf,
+    extract_clauses,
+    evaluate_clause_risk,
+    generate_review_memo,
 )
 
 _TOOL_MODULES = [
-    parse_loan_package,
-    validate_loan_application,
-    compute_credit_ratios,
-    assess_creditworthiness,
+    parse_contract_pdf,
+    extract_clauses,
+    evaluate_clause_risk,
+    generate_review_memo,
 ]
 
 _TOOL_MAP = {mod.NAME: mod for mod in _TOOL_MODULES}

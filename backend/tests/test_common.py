@@ -1,77 +1,52 @@
-"""Tests for shared credit-underwriting utilities."""
+"""Tests for shared contract-review utilities."""
 
 import numpy as np
 
 from app.tools._common import (
-    amortized_annual_debt_service,
-    compute_z_score,
-    format_currency,
-    format_pct,
-    format_ratio,
-    load_validation_rules,
-    safe_div,
+    extract_section,
+    first_int,
+    load_clause_patterns,
+    load_risk_rules,
     safe_json_serialize,
 )
 
-
-class TestZScore:
-    def test_normal_z_score(self):
-        assert compute_z_score(3.0, 1.0, 1.0) == 2.0
-
-    def test_zero_std_returns_none(self):
-        assert compute_z_score(3.0, 1.0, 0) is None
-
-    def test_none_std_returns_none(self):
-        assert compute_z_score(3.0, 1.0, None) is None
-
-
-class TestSafeDiv:
-    def test_normal(self):
-        assert safe_div(10, 4) == 2.5
-
-    def test_zero_denominator(self):
-        assert safe_div(10, 0) is None
-
-    def test_none_operands(self):
-        assert safe_div(None, 4) is None
-        assert safe_div(10, None) is None
+_SAMPLE = (
+    "AGREEMENT\n\n"
+    "2. TERM AND TERMINATION\n"
+    "The initial term is 24 months and renews automatically unless cancelled 90 days prior.\n\n"
+    "7. LIMITATION OF LIABILITY\n"
+    "Liability shall not exceed fees paid in the prior 3 months.\n\n"
+    "8. GOVERNING LAW\n"
+    "Governed by the laws of the State of New York.\n"
+)
 
 
-class TestAmortizedDebtService:
-    def test_positive_rate(self):
-        # $750K at 8.5% over 60 months -> ~$184.6K/yr
-        annual = amortized_annual_debt_service(750000, 0.085, 60)
-        assert 180000 < annual < 190000
+class TestExtractSection:
+    def test_finds_liability(self):
+        body = extract_section(_SAMPLE, ["LIMITATION OF LIABILITY", "LIABILITY"])
+        assert body is not None and "not exceed" in body
 
-    def test_zero_rate_is_straight_line(self):
-        # $120K at 0% over 24 months -> $60K/yr
-        assert amortized_annual_debt_service(120000, 0.0, 24) == 60000
+    def test_finds_term(self):
+        body = extract_section(_SAMPLE, ["TERM"])
+        assert body is not None and "24 months" in body
 
-    def test_zero_term(self):
-        assert amortized_annual_debt_service(100000, 0.085, 0) == 0.0
+    def test_missing_returns_none(self):
+        assert extract_section(_SAMPLE, ["FORCE MAJEURE"]) is None
+
+    def test_empty_text(self):
+        assert extract_section("", ["TERM"]) is None
 
 
-class TestFormatting:
-    def test_format_pct_positive(self):
-        assert format_pct(13.2) == "+13.20%"
+class TestFirstInt:
+    def test_basic(self):
+        assert first_int("at least 90 days") == 90
 
-    def test_format_pct_negative(self):
-        assert format_pct(-6.7) == "-6.70%"
+    def test_comma(self):
+        assert first_int("up to 1,500 units") == 1500
 
-    def test_format_pct_none(self):
-        assert format_pct(None) == "N/A"
-
-    def test_format_ratio(self):
-        assert format_ratio(1.345) == "1.34x"
-
-    def test_format_ratio_none(self):
-        assert format_ratio(None) == "N/A"
-
-    def test_format_currency_millions(self):
-        assert "M" in format_currency(1_200_000)
-
-    def test_format_currency_none(self):
-        assert format_currency(None) == "N/A"
+    def test_none(self):
+        assert first_int("no digits here") is None
+        assert first_int(None) is None
 
 
 class TestSafeJsonSerialize:
@@ -79,30 +54,21 @@ class TestSafeJsonSerialize:
         result = safe_json_serialize(np.int64(42))
         assert result == 42 and isinstance(result, int)
 
-    def test_numpy_nan_becomes_none(self):
-        assert safe_json_serialize(np.nan) is None
-
-    def test_nested_dict(self):
-        data = {"a": np.int64(1), "b": [np.float64(2.0), np.nan]}
-        assert safe_json_serialize(data) == {"a": 1, "b": [2.0, None]}
+    def test_nested(self):
+        assert safe_json_serialize({"a": np.int64(1), "b": [np.bool_(True)]}) == {"a": 1, "b": [True]}
 
     def test_passthrough(self):
-        assert safe_json_serialize("hello") == "hello"
+        assert safe_json_serialize("hi") == "hi"
         assert safe_json_serialize(None) is None
 
 
-class TestValidationRules:
-    def test_loads_rules(self):
-        rules = load_validation_rules()
-        assert "requested_amount" in rules
-        assert "requested_term_months" in rules
-        assert "financials" in rules
+class TestSchemaLoaders:
+    def test_clause_patterns(self):
+        patterns = load_clause_patterns()["clauses"]
+        assert "liability_cap" in patterns
+        assert "auto_renewal" in patterns
 
-    def test_amount_bounds(self):
-        rules = load_validation_rules()
-        amt = rules["requested_amount"]
-        assert amt["min"] < amt["max"]
-
-    def test_required_years(self):
-        rules = load_validation_rules()
-        assert rules["financials"]["required_years"] == 3
+    def test_risk_rules(self):
+        rules = load_risk_rules()
+        assert rules["auto_renewal_notice_days_threshold"] == 30
+        assert "liability_cap" in rules["required_clauses"]
