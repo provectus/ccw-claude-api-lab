@@ -156,55 +156,52 @@ async def get_pipeline_assessment(pipeline_id: str):
 
 @router.get("/scenarios", include_in_schema=True)
 async def get_scenarios():
-    """Return pre-configured demo loan packages with folder paths to sample data."""
+    """Return pre-configured demo PA requests with folder paths to sample data."""
     settings = get_settings()
     sample = settings.sample_data_dir
 
     return {
         "scenarios": [
             {
-                "id": "acme_widgets",
-                "name": "Acme Widgets Mfg. — Equipment Loan",
+                "id": "lumbar_mri",
+                "name": "Lumbar MRI (72148) — meets policy",
                 "description": (
-                    "$750K equipment loan for a profitable widget manufacturer with growing "
-                    "revenue, healthy margins, and pledged equipment collateral. Clean approve case."
+                    "MRI lumbar spine for chronic low-back pain with 8 weeks conservative "
+                    "treatment, completed PT, and prior imaging. Clean approve case."
                 ),
-                "file_paths": [str(sample / "acme_widgets")],
+                "file_paths": [str(sample / "lumbar_mri")],
                 "fund_metadata": {
-                    "business_name": "Acme Widgets Manufacturing",
-                    "requested_amount": 750_000,
-                    "requested_term_months": 60,
-                    "purpose": "equipment",
+                    "request_id": "PA-2026-0413",
+                    "cpt_code": "72148",
+                    "plan_type": "PPO",
                 },
             },
             {
-                "id": "bravo_logistics",
-                "name": "Bravo Logistics — Working Capital",
+                "id": "knee_arthroscopy",
+                "name": "Knee Arthroscopy (29881) — criteria unmet",
                 "description": (
-                    "$1.2M working-capital line for a freight broker with declining revenue and "
-                    "thinning coverage. Marginal — likely approve-with-conditions."
+                    "Knee arthroscopy with imaging-confirmed meniscal tear, but only 3 weeks of "
+                    "conservative treatment and no documented PT. Should pend for more info."
                 ),
-                "file_paths": [str(sample / "bravo_logistics")],
+                "file_paths": [str(sample / "knee_arthroscopy")],
                 "fund_metadata": {
-                    "business_name": "Bravo Logistics LLC",
-                    "requested_amount": 1_200_000,
-                    "requested_term_months": 36,
-                    "purpose": "working_capital",
+                    "request_id": "PA-2026-0511",
+                    "cpt_code": "29881",
+                    "plan_type": "HMO",
                 },
             },
             {
-                "id": "charlie_retail",
-                "name": "Charlie Retail Group — Expansion (incomplete)",
+                "id": "incomplete_request",
+                "name": "Brain MRI (70553) — incomplete request",
                 "description": (
-                    "$2M expansion loan with a missing year of financials — exercises the "
-                    "validation error path."
+                    "Brain MRI request missing the primary diagnosis and several clinical "
+                    "fields — exercises the validation / pend-for-info path."
                 ),
-                "file_paths": [str(sample / "charlie_retail")],
+                "file_paths": [str(sample / "incomplete_request")],
                 "fund_metadata": {
-                    "business_name": "Charlie Retail Group",
-                    "requested_amount": 2_000_000,
-                    "requested_term_months": 84,
-                    "purpose": "expansion",
+                    "request_id": "PA-2026-0522",
+                    "cpt_code": "70553",
+                    "plan_type": "Medicare Advantage",
                 },
             },
         ]

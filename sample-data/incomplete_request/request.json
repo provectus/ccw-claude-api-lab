@@ -1,0 +1,29 @@
+{
+  "request_id": "PA-2026-0522",
+  "patient": {
+    "patient_id": "PT-71004",
+    "age": 63,
+    "sex": "M",
+    "member_id": "MBR-3320199",
+    "plan_type": "Medicare Advantage"
+  },
+  "procedure": {
+    "cpt_code": "70553",
+    "description": "MRI brain with and without contrast",
+    "place_of_service": "22",
+    "requested_units": 1
+  },
+  "diagnoses": [
+    {"icd10_code": "R51.9", "description": "Headache, unspecified", "primary": false}
+  ],
+  "ordering_provider": {
+    "npi": "1773456789",
+    "name": "Dr. Priya Nair",
+    "specialty": "Neurology"
+  },
+  "clinical": {
+    "indication": "New-onset headaches",
+    "neuro_deficit": false
+  },
+  "supporting_docs": ["chart_notes"]
+}

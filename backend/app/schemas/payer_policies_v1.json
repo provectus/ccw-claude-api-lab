@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "name": "payer_policies",
+  "description": "Per-CPT medical-necessity policies. check_payer_policy looks up the procedure's CPT and evaluates each criterion against the request's clinical facts. meets_policy is true only when every criterion is met.",
+  "policies": {
+    "72148": {
+      "description": "MRI lumbar spine without contrast",
+      "criteria": [
+        {"id": "conservative_tx", "name": "≥6 weeks conservative treatment", "path": "clinical.conservative_tx_weeks", "op": ">=", "value": 6},
+        {"id": "physical_therapy", "name": "Physical therapy completed", "path": "clinical.physical_therapy_completed", "op": "==", "value": true},
+        {"id": "prior_workup", "name": "Prior imaging or neurological deficit documented", "path": "clinical.prior_imaging", "op": "==", "value": true}
+      ]
+    },
+    "29881": {
+      "description": "Arthroscopy, knee, with meniscectomy",
+      "criteria": [
+        {"id": "conservative_tx", "name": "≥6 weeks conservative treatment", "path": "clinical.conservative_tx_weeks", "op": ">=", "value": 6},
+        {"id": "physical_therapy", "name": "Physical therapy completed/failed", "path": "clinical.physical_therapy_completed", "op": "==", "value": true},
+        {"id": "imaging_confirmed", "name": "Imaging-confirmed meniscal pathology", "path": "clinical.prior_imaging", "op": "==", "value": true},
+        {"id": "mechanical", "name": "Mechanical symptoms present", "path": "clinical.mechanical_symptoms", "op": "==", "value": true}
+      ]
+    },
+    "70553": {
+      "description": "MRI brain with and without contrast",
+      "criteria": [
+        {"id": "neuro_deficit", "name": "Documented neurological deficit", "path": "clinical.neuro_deficit", "op": "==", "value": true},
+        {"id": "conservative_tx", "name": "≥2 weeks symptom duration", "path": "clinical.conservative_tx_weeks", "op": ">=", "value": 2}
+      ]
+    }
+  }
+}

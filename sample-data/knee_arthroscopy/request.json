@@ -1,0 +1,33 @@
+{
+  "request_id": "PA-2026-0511",
+  "patient": {
+    "patient_id": "PT-90233",
+    "age": 41,
+    "sex": "M",
+    "member_id": "MBR-7741200",
+    "plan_type": "HMO"
+  },
+  "procedure": {
+    "cpt_code": "29881",
+    "description": "Arthroscopy, knee, with meniscectomy",
+    "place_of_service": "24",
+    "requested_units": 1
+  },
+  "diagnoses": [
+    {"icd10_code": "M23.205", "description": "Derangement of meniscus, unspecified, left knee", "primary": true}
+  ],
+  "ordering_provider": {
+    "npi": "1992345678",
+    "name": "Dr. Marcus Lee",
+    "specialty": "Orthopedic Surgery"
+  },
+  "clinical": {
+    "indication": "Left knee mechanical locking with MRI-confirmed medial meniscal tear",
+    "conservative_tx_weeks": 3,
+    "physical_therapy_completed": false,
+    "prior_imaging": true,
+    "mechanical_symptoms": true,
+    "neuro_deficit": false
+  },
+  "supporting_docs": ["mri_report", "chart_notes"]
+}

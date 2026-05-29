@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "name": "canonical_pa_request",
+  "description": "Canonical structure for an outpatient prior-authorization (PA) request. parse_pa_request normalizes the raw request files into this shape; all downstream tools consume it.",
+  "type": "object",
+  "required": ["request_id", "patient", "procedure", "diagnoses", "ordering_provider", "clinical"],
+  "properties": {
+    "request_id": {"type": "string", "description": "Unique PA request identifier."},
+    "patient": {
+      "type": "object",
+      "required": ["patient_id", "age", "sex", "member_id", "plan_type"],
+      "properties": {
+        "patient_id": {"type": "string"},
+        "age": {"type": "integer", "description": "Patient age in years."},
+        "sex": {"type": "string", "description": "M | F | X"},
+        "member_id": {"type": "string", "description": "Payer member ID."},
+        "plan_type": {"type": "string", "description": "HMO | PPO | Medicare Advantage | Medicaid"}
+      }
+    },
+    "procedure": {
+      "type": "object",
+      "required": ["cpt_code", "description", "place_of_service", "requested_units"],
+      "properties": {
+        "cpt_code": {"type": "string", "description": "5-digit CPT/HCPCS procedure code."},
+        "description": {"type": "string"},
+        "place_of_service": {"type": "string", "description": "CMS place-of-service code (e.g. 11 office, 22 outpatient hospital, 24 ASC)."},
+        "requested_units": {"type": "integer"}
+      }
+    },
+    "diagnoses": {
+      "type": "array",
+      "description": "Supporting diagnoses; exactly one must be marked primary.",
+      "items": {
+        "type": "object",
+        "required": ["icd10_code", "description", "primary"],
+        "properties": {
+          "icd10_code": {"type": "string", "description": "ICD-10-CM diagnosis code."},
+          "description": {"type": "string"},
+          "primary": {"type": "boolean"}
+        }
+      }
+    },
+    "ordering_provider": {
+      "type": "object",
+      "required": ["npi", "name", "specialty"],
+      "properties": {
+        "npi": {"type": "string", "description": "10-digit National Provider Identifier."},
+        "name": {"type": "string"},
+        "specialty": {"type": "string"}
+      }
+    },
+    "clinical": {
+      "type": "object",
+      "description": "Clinical facts the payer policy is evaluated against.",
+      "required": ["indication", "conservative_tx_weeks", "physical_therapy_completed", "prior_imaging", "mechanical_symptoms", "neuro_deficit"],
+      "properties": {
+        "indication": {"type": "string", "description": "Clinical indication / reason for the procedure."},
+        "conservative_tx_weeks": {"type": "integer", "description": "Weeks of conservative treatment attempted."},
+        "physical_therapy_completed": {"type": "boolean"},
+        "prior_imaging": {"type": "boolean", "description": "Whether confirmatory prior imaging (X-ray/MRI) exists."},
+        "mechanical_symptoms": {"type": "boolean"},
+        "neuro_deficit": {"type": "boolean", "description": "Documented neurological deficit."},
+        "notes": {"type": "string", "description": "Free-text clinical notes (merged from clinical_notes.txt)."}
+      }
+    },
+    "supporting_docs": {
+      "type": "array",
+      "description": "List of attached document types (e.g. pt_records, imaging_report, chart_notes).",
+      "items": {"type": "string"}
+    }
+  }
+}

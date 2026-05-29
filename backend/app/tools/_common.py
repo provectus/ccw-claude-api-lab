@@ -1,6 +1,7 @@
-"""Shared utilities for credit-underwriting tool implementations."""
+"""Shared utilities for prior-authorization review tool implementations."""
 
 import json
+import operator
 from datetime import date, datetime
 from pathlib import Path
 
@@ -9,90 +10,76 @@ import pandas as pd
 
 _SCHEMA_DIR = Path(__file__).resolve().parent.parent / "schemas"
 
-_validation_rules: dict | None = None
+_criteria_rules: dict | None = None
+_payer_policies: dict | None = None
 _canonical_schema: dict | None = None
 
 
-def load_validation_rules() -> dict:
-    """Load and cache the loan validation rules configuration."""
-    global _validation_rules
-    if _validation_rules is None:
-        with open(_SCHEMA_DIR / "validation_rules.json") as f:
-            _validation_rules = json.load(f)
-    return _validation_rules
+def load_criteria_rules() -> dict:
+    """Load and cache the clinical/structural validation rules."""
+    global _criteria_rules
+    if _criteria_rules is None:
+        with open(_SCHEMA_DIR / "criteria_rules.json") as f:
+            _criteria_rules = json.load(f)
+    return _criteria_rules
+
+
+def load_payer_policies() -> dict:
+    """Load and cache the per-CPT payer medical-necessity policies."""
+    global _payer_policies
+    if _payer_policies is None:
+        with open(_SCHEMA_DIR / "payer_policies_v1.json") as f:
+            _payer_policies = json.load(f)
+    return _payer_policies
 
 
 def load_canonical_schema() -> dict:
-    """Load and cache the canonical loan application schema."""
+    """Load and cache the canonical PA request schema."""
     global _canonical_schema
     if _canonical_schema is None:
-        with open(_SCHEMA_DIR / "canonical_loan_application_v1.json") as f:
+        with open(_SCHEMA_DIR / "canonical_pa_request_v1.json") as f:
             _canonical_schema = json.load(f)
     return _canonical_schema
 
 
-def compute_z_score(value: float, mean: float, std: float) -> float | None:
-    """Compute z-score for a value given mean and standard deviation."""
-    if std is None or std == 0:
-        return None
-    return (value - mean) / std
+def get_path(obj: dict, dotted: str):
+    """Resolve a dotted path (e.g. 'clinical.conservative_tx_weeks') against a dict.
 
-
-def safe_div(numerator: float | None, denominator: float | None) -> float | None:
-    """Divide two numbers, returning None on a zero/None denominator."""
-    if numerator is None or denominator is None or denominator == 0:
-        return None
-    return numerator / denominator
-
-
-def amortized_annual_debt_service(
-    principal: float, annual_rate: float, term_months: int
-) -> float:
-    """Annual debt service for a fully-amortizing loan.
-
-    Uses the standard amortization payment formula on a monthly basis, then
-    annualizes. Falls back to straight-line principal if the rate is zero.
+    Returns None if any segment is missing.
     """
-    if term_months <= 0:
-        return 0.0
-    if annual_rate <= 0:
-        return principal / (term_months / 12)
-    monthly_rate = annual_rate / 12
-    monthly_payment = (
-        principal
-        * monthly_rate
-        * (1 + monthly_rate) ** term_months
-        / ((1 + monthly_rate) ** term_months - 1)
-    )
-    return monthly_payment * 12
+    cur = obj
+    for part in dotted.split("."):
+        if not isinstance(cur, dict) or part not in cur:
+            return None
+        cur = cur[part]
+    return cur
+
+
+_OPERATORS = {
+    ">=": operator.ge,
+    ">": operator.gt,
+    "<=": operator.le,
+    "<": operator.lt,
+    "==": operator.eq,
+    "!=": operator.ne,
+}
+
+
+def eval_criterion(actual, op: str, expected) -> bool:
+    """Evaluate `actual <op> expected`. Returns False on missing data or bad op."""
+    if actual is None or op not in _OPERATORS:
+        return False
+    try:
+        return bool(_OPERATORS[op](actual, expected))
+    except TypeError:
+        return False
 
 
 def format_pct(pct: float | None) -> str:
     """Format a percentage (already in percent units) for display."""
     if pct is None:
         return "N/A"
-    sign = "+" if pct >= 0 else ""
-    return f"{sign}{pct:.2f}%"
-
-
-def format_ratio(ratio: float | None, suffix: str = "x") -> str:
-    """Format a coverage/leverage ratio for display (e.g. 1.42x)."""
-    if ratio is None:
-        return "N/A"
-    return f"{ratio:.2f}{suffix}"
-
-
-def format_currency(amount: float | None, currency: str = "USD") -> str:
-    """Format currency amount for display."""
-    if amount is None:
-        return "N/A"
-    if abs(amount) >= 1_000_000_000:
-        return f"${amount / 1_000_000_000:,.2f}B"
-    if abs(amount) >= 1_000_000:
-        return f"${amount / 1_000_000:,.2f}M"
-    if abs(amount) >= 1_000:
-        return f"${amount / 1_000:,.2f}K"
-    return f"${amount:,.2f}"
+    return f"{pct:.0f}%"
 
 
 def safe_json_serialize(obj):

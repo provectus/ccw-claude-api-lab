@@ -1,0 +1,34 @@
+{
+  "request_id": "PA-2026-0413",
+  "patient": {
+    "patient_id": "PT-88421",
+    "age": 54,
+    "sex": "F",
+    "member_id": "MBR-5512098",
+    "plan_type": "PPO"
+  },
+  "procedure": {
+    "cpt_code": "72148",
+    "description": "MRI lumbar spine without contrast",
+    "place_of_service": "22",
+    "requested_units": 1
+  },
+  "diagnoses": [
+    {"icd10_code": "M54.50", "description": "Low back pain, unspecified", "primary": true},
+    {"icd10_code": "M51.36", "description": "Other intervertebral disc degeneration, lumbar region", "primary": false}
+  ],
+  "ordering_provider": {
+    "npi": "1487654321",
+    "name": "Dr. Elena Ruiz",
+    "specialty": "Orthopedic Surgery"
+  },
+  "clinical": {
+    "indication": "Chronic low back pain with radicular features, unresponsive to conservative care",
+    "conservative_tx_weeks": 8,
+    "physical_therapy_completed": true,
+    "prior_imaging": true,
+    "mechanical_symptoms": false,
+    "neuro_deficit": false
+  },
+  "supporting_docs": ["pt_records", "xray_report", "chart_notes"]
+}

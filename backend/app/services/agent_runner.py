@@ -1,4 +1,4 @@
-"""Agentic loop: Claude drives the loan-underwriting pipeline via tool use."""
+"""Agentic loop: Claude drives the prior-authorization review pipeline via tool use."""
 
 from __future__ import annotations
 
@@ -22,25 +22,25 @@ _MAX_ITERATIONS = 25
 
 
 def _load_system_prompt() -> str:
-    """Load the credit analyst system prompt."""
-    prompt_path = _PROMPTS_DIR / "credit_analyst.md"
+    """Load the clinical reviewer system prompt."""
+    prompt_path = _PROMPTS_DIR / "clinical_reviewer.md"
     return prompt_path.read_text()
 
 
 def _build_initial_message(file_paths: list[str], metadata: dict) -> str:
-    """Build the initial user message from loan-package paths and borrower metadata."""
-    parts = ["I have the following loan-package files to underwrite:\n"]
+    """Build the initial user message from PA-request paths and request metadata."""
+    parts = ["I have the following prior-authorization request files to review:\n"]
     for fp in file_paths:
         parts.append(f"- `{fp}`")
 
     if metadata:
-        parts.append("\n**Borrower Metadata:**")
+        parts.append("\n**Request Metadata:**")
         for key, value in metadata.items():
             parts.append(f"- **{key}**: {value}")
 
     parts.append(
-        "\nPlease underwrite this loan application through the complete pipeline "
-        "and produce a creditworthiness assessment with a recommendation."
+        "\nPlease review this prior-authorization request through the complete pipeline "
+        "and produce a determination with a recommendation."
     )
     return "\n".join(parts)
 
@@ -129,8 +129,8 @@ async def run_agent(pipeline: PipelineState, settings: Settings) -> None:
                         "step_index": step_index,
                     })
 
-                    # Extract the final assessment from assess_creditworthiness
-                    if block.name == "assess_creditworthiness" and result["source"] != "error":
+                    # Extract the final determination from recommend_decision
+                    if block.name == "recommend_decision" and result["source"] != "error":
                         pipeline.assessment = result["result"]
 
                     tool_results.append({
