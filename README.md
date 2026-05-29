@@ -3,7 +3,7 @@
 > **You are on the `finance` starter branch.** This is the hands-on workshop scaffold:
 > the structure, tool *schemas*, agent loop, sample data, and tests are all in place, but
 > the tool logic, system prompt, and schemas are **fill-in-the-blank**. You implement them
-> step by step. The finished reference lives on the **`main`** branch — peek if you get stuck.
+> step by step. The finished reference lives on the **`finance-solution`** branch — peek if you get stuck.
 
 Build a tool-using agent that underwrites a small-business loan: Claude drives a tool-use
 loop that parses a borrower package, validates it, computes credit ratios, and produces a

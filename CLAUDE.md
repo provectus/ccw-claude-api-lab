@@ -13,8 +13,8 @@ See [README.md](README.md) for setup, the tool list, and sample data.
 `NotImplementedError` TODOs, and `prompts/credit_analyst.md` + the two `schemas/*.json`
 files are fill-in-the-blank skeletons (search `TODO` / `_TODO_step_4`). `NAME`/`DEFINITION`,
 the agent loop, registry, `_common` helpers, sample data, and tests are all in place. The
-finished reference is on the **`main`** branch. Scaffolding lifted from the `finance-demo`
-(NAV Review Analyst) architecture, domain layer rewritten for loan underwriting.
+finished reference is on the **`finance-solution`** branch. Scaffolding lifted from the
+`finance-demo` (NAV Review Analyst) architecture, domain layer rewritten for loan underwriting.
 
 ## File Structure
 
