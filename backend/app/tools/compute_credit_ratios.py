@@ -40,89 +40,22 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Compute credit ratios. Pure arithmetic over the canonical financials."""
-    app_data = input_data.get("application") or {}
-    annual_rate = input_data.get("assumed_annual_rate", _DEFAULT_ANNUAL_RATE)
+    """Compute credit ratios. Pure arithmetic over the canonical financials.
 
-    financials = app_data.get("financials") or []
-    if not financials:
-        return {"error": "No financials present; cannot compute ratios"}
+    TODO (Step 8 — Build Tool 3):
+      Compute, from the latest (and across all) financial years:
+        - dscr            = latest EBITDA / amortized_annual_debt_service(
+                              requested_amount, assumed_annual_rate, term_months)
+        - current_ratio   = current_assets / current_liabilities (latest)
+        - debt_to_equity  = total_liabilities / equity (latest)
+        - gross margin per year + trend (latest minus earliest, in pp)
+        - revenue_cagr_3y = (rev_latest / rev_earliest) ** (1/(n-1)) - 1
+        - ltv             = requested_amount / collateral.appraised_value (if any)
+      Use `safe_div` and `amortized_annual_debt_service` from _common. Return
+      safe_json_serialize({dscr, current_ratio, debt_to_equity,
+      gross_margin_by_year, gross_margin_trend_pp, revenue_cagr_3y_pct, ltv_pct,
+      inputs_used}). Return {"error": ...} if no financials are present.
 
-    # financials are oldest -> newest
-    earliest = financials[0]
-    latest = financials[-1]
-    n_years = len(financials)
-
-    requested_amount = app_data.get("requested_amount") or 0
-    term_months = app_data.get("requested_term_months") or 0
-
-    # DSCR — most recent EBITDA over annual debt service for the requested loan
-    annual_debt_service = amortized_annual_debt_service(
-        requested_amount, annual_rate, term_months
-    )
-    dscr = safe_div(latest.get("ebitda"), annual_debt_service)
-
-    # Current ratio — current assets over current liabilities (latest year)
-    current_ratio = safe_div(
-        latest.get("current_assets"), latest.get("current_liabilities")
-    )
-
-    # Debt-to-equity (latest year)
-    debt_to_equity = safe_div(
-        latest.get("total_liabilities"), latest.get("equity")
-    )
-
-    # Gross margin per year + trend (percentage points, latest - earliest)
-    gross_margins = []
-    for year in financials:
-        rev = year.get("revenue")
-        cogs = year.get("cogs")
-        gm = safe_div((rev - cogs) if None not in (rev, cogs) else None, rev)
-        gross_margins.append({
-            "fiscal_year": year.get("fiscal_year"),
-            "gross_margin_pct": round(gm * 100, 2) if gm is not None else None,
-        })
-    gm_latest = gross_margins[-1]["gross_margin_pct"]
-    gm_earliest = gross_margins[0]["gross_margin_pct"]
-    gross_margin_trend_pp = (
-        round(gm_latest - gm_earliest, 2)
-        if None not in (gm_latest, gm_earliest)
-        else None
-    )
-
-    # 3-year revenue CAGR
-    rev_latest = latest.get("revenue")
-    rev_earliest = earliest.get("revenue")
-    revenue_cagr_3y = None
-    if (
-        rev_earliest not in (None, 0)
-        and rev_latest is not None
-        and rev_latest > 0
-        and n_years > 1
-    ):
-        revenue_cagr_3y = round(
-            ((rev_latest / rev_earliest) ** (1 / (n_years - 1)) - 1) * 100, 2
-        )
-
-    # LTV (if collateral)
-    ltv = None
-    collateral = app_data.get("collateral")
-    if collateral and collateral.get("appraised_value"):
-        ltv_ratio = safe_div(requested_amount, collateral["appraised_value"])
-        ltv = round(ltv_ratio * 100, 2) if ltv_ratio is not None else None
-
-    return safe_json_serialize({
-        "dscr": round(dscr, 2) if dscr is not None else None,
-        "current_ratio": round(current_ratio, 2) if current_ratio is not None else None,
-        "debt_to_equity": round(debt_to_equity, 2) if debt_to_equity is not None else None,
-        "gross_margin_by_year": gross_margins,
-        "gross_margin_trend_pp": gross_margin_trend_pp,
-        "revenue_cagr_3y_pct": revenue_cagr_3y,
-        "ltv_pct": ltv,
-        "inputs_used": {
-            "assumed_annual_rate": annual_rate,
-            "annual_debt_service": round(annual_debt_service, 2),
-            "latest_fiscal_year": latest.get("fiscal_year"),
-            "years_analyzed": n_years,
-        },
-    })
+    See tests/test_loan_tools.py::TestComputeCreditRatios for the contract.
+    """
+    raise NotImplementedError("TODO (Step 8): implement compute_credit_ratios")

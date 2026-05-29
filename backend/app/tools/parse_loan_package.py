@@ -49,54 +49,20 @@ _FINANCIAL_FIELDS = [
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Read profile.json + financials.csv and assemble a LoanApplication dict."""
-    folder = Path(input_data["folder_path"])
-    if not folder.exists() or not folder.is_dir():
-        return {"error": f"Loan package folder not found: {folder}"}
+    """Read profile.json + financials.csv and assemble a LoanApplication dict.
 
-    profile_path = folder / "profile.json"
-    financials_path = folder / "financials.csv"
-    warnings: list[str] = []
+    TODO (Step 6 — Build Tool 1):
+      1. Resolve `input_data["folder_path"]` and confirm it exists.
+      2. Read `profile.json` (json.loads) and `financials.csv` (pd.read_csv).
+      3. Sort financials by `fiscal_year` and coerce each `_FINANCIAL_FIELDS`
+         value to float, recording a warning for any missing field.
+      4. Assemble the canonical LoanApplication dict (borrower_id, business_name,
+         industry_naics, requested_amount, requested_term_months, purpose,
+         financials[], optional collateral).
+      5. Return safe_json_serialize({application, parse_warnings, years_parsed,
+         source_folder}).
 
-    if not profile_path.exists():
-        return {"error": f"Missing profile.json in {folder}"}
-    if not financials_path.exists():
-        return {"error": f"Missing financials.csv in {folder}"}
-
-    profile = json.loads(profile_path.read_text())
-
-    df = pd.read_csv(financials_path)
-    if "fiscal_year" in df.columns:
-        df = df.sort_values("fiscal_year")
-
-    financials: list[dict] = []
-    for _, row in df.iterrows():
-        year: dict = {"fiscal_year": int(row["fiscal_year"]) if "fiscal_year" in row else None}
-        for field in _FINANCIAL_FIELDS:
-            if field in row and pd.notna(row[field]):
-                year[field] = float(row[field])
-            else:
-                year[field] = None
-                warnings.append(
-                    f"Missing {field} for fiscal_year {year['fiscal_year']}"
-                )
-        financials.append(year)
-
-    application = {
-        "borrower_id": profile.get("borrower_id"),
-        "business_name": profile.get("business_name"),
-        "industry_naics": str(profile.get("industry_naics", "")),
-        "requested_amount": profile.get("requested_amount"),
-        "requested_term_months": profile.get("requested_term_months"),
-        "purpose": profile.get("purpose"),
-        "financials": financials,
-    }
-    if profile.get("collateral"):
-        application["collateral"] = profile["collateral"]
-
-    return safe_json_serialize({
-        "application": application,
-        "parse_warnings": warnings,
-        "years_parsed": len(financials),
-        "source_folder": folder.name,
-    })
+    See the `main` branch for the reference implementation, and the unit tests in
+    tests/test_loan_tools.py::TestParseLoanPackage for the exact contract.
+    """
+    raise NotImplementedError("TODO (Step 6): implement parse_loan_package")

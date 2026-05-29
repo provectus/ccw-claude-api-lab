@@ -1,17 +1,74 @@
-# Claude API Lab — Commercial Loan Underwriting Agent
+# Claude API Lab — Loan Underwriting (STARTER branch)
 
-Reference implementation for the **Claude API Lab** workshop (Module 2.2). An agentic
-demo that underwrites a small-business loan application end-to-end: Claude drives a
-tool-use loop that parses a borrower package, validates it against credit policy,
-computes credit ratios, and produces a structured creditworthiness assessment — no
-hardcoded step sequence, the model decides which tool to call next.
+> **You are on the `finance` starter branch.** This is the hands-on workshop scaffold:
+> the structure, tool *schemas*, agent loop, sample data, and tests are all in place, but
+> the tool logic, system prompt, and schemas are **fill-in-the-blank**. You implement them
+> step by step. The finished reference lives on the **`main`** branch — peek if you get stuck.
 
-> This `main` branch is the **finished reference**. Workshop starter branches
-> (`finance`, …) carry the same scaffold with `execute()` bodies stubbed out as
-> fill-in-the-blank TODOs. The workshop content lives in the
-> [`cc-workshop`](https://github.com/provectus) platform.
+Build a tool-using agent that underwrites a small-business loan: Claude drives a tool-use
+loop that parses a borrower package, validates it, computes credit ratios, and produces a
+structured creditworthiness assessment. Built for the **Claude API Lab** workshop (Module 2.2).
 
 Built by [Provectus](https://provectus.com/).
+
+## What you'll implement
+
+| Step | Where | What |
+|------|-------|------|
+| 4 — Schema | `backend/app/schemas/canonical_loan_application_v1.json`, `validation_rules.json` | Fill in the canonical fields + policy rule values (look for `_TODO_step_4`). |
+| 5 — Prompt | `backend/app/prompts/credit_analyst.md` | Flesh out the persona, workflow, criteria, and output contract (look for `TODO`). |
+| 6 — Tool 1 | `backend/app/tools/parse_loan_package.py` | Folder → canonical `LoanApplication`. |
+| 7 — Tool 2 | `backend/app/tools/validate_loan_application.py` | Apply the validation rules. |
+| 8 — Tool 3 | `backend/app/tools/compute_credit_ratios.py` | DSCR, current ratio, D/E, margin trend, CAGR, LTV. |
+| 9 — Tool 4 | `backend/app/tools/assess_creditworthiness.py` | The final structured verdict. |
+| 10 — Loop | `backend/app/services/agent_runner.py` | Already wired — read it to understand the loop. |
+
+Each tool keeps its `NAME` and `DEFINITION` (so Claude already sees the tool schemas);
+only the `execute()` body is a `NotImplementedError` TODO. The tool registry
+(`backend/app/tools/registry.py`) already lists all four.
+
+## Your progress meter: the tests
+
+```bash
+cd backend
+uv venv --python 3.12 .venv && uv pip install -e ".[dev]"   # or python3.12 -m venv + pip
+.venv/bin/python -m pytest
+```
+
+Out of the box, the **plumbing** tests (agent loop, SSE routes, store, uploads, helpers)
+pass, while `tests/test_loan_tools.py` and the validation-rules tests **fail** — that's your
+worklist. Make them green step by step. `tests/test_loan_tools.py` is the exact contract for
+each tool.
+
+## Run it
+
+```bash
+# Backend
+cd backend
+cp ../.env.example ../.env        # add your ANTHROPIC_API_KEY
+.venv/bin/uvicorn app.main:app --reload --port 8000    # API docs at /api/docs
+
+# Frontend
+cd frontend && npm install && npm run dev               # http://localhost:3000
+
+# Or both via Docker
+docker compose up --build
+```
+
+The app boots immediately; until you implement the tools, a pipeline run will stream the
+agent's reasoning and then surface tool errors (`NotImplementedError`). As you complete each
+step, the corresponding tool starts returning real results.
+
+## Sample data
+
+Three loan packages under `sample-data/`, surfaced as demo scenarios via
+`GET /api/pipeline/scenarios`:
+
+| Package | Expected outcome (once implemented) |
+|---------|-------------------------------------|
+| `acme_widgets` | Clean **approve** — strong coverage, growing revenue |
+| `bravo_logistics` | **approve_with_conditions** — thin DSCR, declining revenue |
+| `charlie_retail` | **Validation error path** — only 2 of 3 required years present |
 
 ## Architecture
 
@@ -19,80 +76,7 @@ Built by [Provectus](https://provectus.com/).
 React 19 Frontend  ◄──SSE──►  FastAPI Backend  ◄──tool use──►  Claude Sonnet 4.6
 ```
 
-| Layer | Stack |
-|-------|-------|
-| **Frontend** | React 19, TypeScript, Vite, MUI, Zustand (SSE streaming UI) |
-| **Backend** | FastAPI, Pydantic, SSE (sse-starlette), pandas |
-| **AI** | Claude Sonnet 4.6 via the Anthropic Messages API with tool use |
-
-The agent loop lives in `backend/app/services/agent_runner.py`: call Claude → dispatch
-each `tool_use` block → append `tool_result`s → loop until `stop_reason == "end_turn"`
-(capped at 25 iterations).
-
-## The four tools
-
-Registered in `backend/app/tools/registry.py` (explicit list — add your module there):
-
-1. **`parse_loan_package`** — folder (`profile.json` + `financials.csv`) → canonical `LoanApplication`.
-2. **`validate_loan_application`** — applies `schemas/validation_rules.json` → `{valid, errors, warnings}`.
-3. **`compute_credit_ratios`** — DSCR, current ratio, debt-to-equity, gross-margin trend, 3-yr revenue CAGR, LTV.
-4. **`assess_creditworthiness`** — the final verdict (recommendation, pricing, risks, confidence, reasoning). Its output becomes the pipeline assessment.
-
-System prompt: `backend/app/prompts/credit_analyst.md`. Canonical schema:
-`backend/app/schemas/canonical_loan_application_v1.json`.
-
-## Quick start
-
-### Prerequisites
-- Python 3.12+ and Node 20+
-- An Anthropic API key
-
-### Backend
-```bash
-cd backend
-uv venv --python 3.12 .venv && source .venv/bin/activate   # or: python3.12 -m venv .venv
-uv pip install -e ".[dev]"                                  # or: pip install -e ".[dev]"
-cp ../.env.example ../.env       # add your ANTHROPIC_API_KEY
-uvicorn app.main:app --reload --port 8000
-```
-API docs at http://localhost:8000/api/docs.
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev        # http://localhost:3000
-```
-
-### Docker (both services)
-```bash
-cp .env.example .env   # add ANTHROPIC_API_KEY
-docker compose up --build
-```
-
-## Sample data
-
-Three loan packages under `sample-data/`, surfaced as demo scenarios via
-`GET /api/pipeline/scenarios`:
-
-| Package | Expected outcome |
-|---------|------------------|
-| `acme_widgets` | Clean **approve** — DSCR ~2.8x, LTV ~68%, growing revenue |
-| `bravo_logistics` | **approve_with_conditions** — DSCR ~1.19x, declining revenue, elevated leverage |
-| `charlie_retail` | **Validation error path** — only 2 of 3 required years present |
-
-## Tests
-
-```bash
-cd backend
-.venv/bin/python -m pytest                    # unit + route tests
-.venv/bin/python -m pytest -m integration     # full agentic loop (needs ANTHROPIC_API_KEY)
-```
-
-## Status notes
-
-- The **backend** domain layer (tools, schema, prompt, agent loop, sample data, tests) is the
-  workshop's teaching core and is fully implemented and tested here.
-- The **frontend** streams the agent's reasoning and tool calls generically; its
-  domain-specific visualization components are inherited from the upstream finance demo
-  and are not yet retailored to loan underwriting (tracked as follow-up; not on the core path).
+The agent loop in `backend/app/services/agent_runner.py` calls Claude, dispatches each
+`tool_use` block, appends `tool_result`s, and loops until `stop_reason == "end_turn"`
+(capped at 25 iterations). The result of `assess_creditworthiness` becomes the pipeline
+assessment.

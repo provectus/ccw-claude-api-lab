@@ -2,39 +2,33 @@
   "schema_version": "1.0",
   "name": "loan_validation_rules",
   "description": "Validation rules applied by validate_loan_application against a canonical loan application.",
+  "_TODO_step_4": [
+    "Fill in the rule values below. validate_loan_application (Step 7) reads them via load_validation_rules().",
+    "requested_amount: min / max bounds.",
+    "requested_term_months: allowed[] standard lengths.",
+    "industry_naics: a 6-digit pattern.",
+    "financials: required_years, balance_sheet_tolerance_pct, and the non_null_fields list.",
+    "collateral: min_appraised_value.",
+    "The `main` branch holds the reference values."
+  ],
   "requested_amount": {
-    "min": 25000,
-    "max": 5000000,
-    "description": "Loan amount must be between $25K and $5M."
+    "min": null,
+    "max": null,
+    "description": "TODO: loan amount bounds (USD)."
   },
   "requested_term_months": {
-    "allowed": [12, 24, 36, 48, 60, 84, 120],
-    "description": "Term must be a standard amortization length."
+    "allowed": [],
+    "description": "TODO: standard amortization lengths."
   },
   "industry_naics": {
     "pattern": "^[0-9]{6}$",
     "description": "NAICS code must be exactly 6 digits."
   },
   "financials": {
-    "required_years": 3,
-    "balance_sheet_tolerance_pct": 1.0,
-    "balance_sheet_identity": "total_assets ~= total_liabilities + equity within tolerance",
-    "non_null_fields": [
-      "revenue",
-      "cogs",
-      "opex",
-      "ebitda",
-      "net_income",
-      "total_assets",
-      "total_liabilities",
-      "equity",
-      "cash",
-      "accounts_receivable",
-      "inventory",
-      "current_assets",
-      "current_liabilities"
-    ],
-    "description": "Exactly three years of complete, non-null statements; balance sheet must balance within tolerance."
+    "required_years": null,
+    "balance_sheet_tolerance_pct": null,
+    "non_null_fields": [],
+    "description": "TODO: completeness + balance-sheet identity rules."
   },
   "collateral": {
     "min_appraised_value": 0,

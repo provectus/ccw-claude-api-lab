@@ -9,10 +9,12 @@ frontend wired over SSE.
 
 See [README.md](README.md) for setup, the tool list, and sample data.
 
-This `main` branch is the **finished reference**. Workshop starter branches stub the tool
-`execute()` bodies as fill-in-the-blank TODOs. Scaffolding was lifted from the
-`finance-demo` (NAV Review Analyst) architecture and the domain layer rewritten for loan
-underwriting.
+**This is the `finance` STARTER branch.** The four tool `execute()` bodies are
+`NotImplementedError` TODOs, and `prompts/credit_analyst.md` + the two `schemas/*.json`
+files are fill-in-the-blank skeletons (search `TODO` / `_TODO_step_4`). `NAME`/`DEFINITION`,
+the agent loop, registry, `_common` helpers, sample data, and tests are all in place. The
+finished reference is on the **`main`** branch. Scaffolding lifted from the `finance-demo`
+(NAV Review Analyst) architecture, domain layer rewritten for loan underwriting.
 
 ## File Structure
 
@@ -55,11 +57,15 @@ docker compose up --build
 
 ## Status / Gotchas
 
-- Backend domain layer is complete and tested; the **frontend** still carries the upstream
-  finance-demo's NAV visualization components — generic streaming works, domain viz does not
-  yet match loan underwriting (follow-up, off the core path).
-- `frontend/e2e/*.spec.ts` are inherited NAV Playwright tests and will fail until the
-  frontend is retailored — not part of the backend `pytest` run.
+- **Starter branch:** `pytest` is intentionally partly red out of the box — `test_loan_tools.py`
+  and the validation-rules tests fail until the learner implements Steps 4–9. The plumbing
+  tests (agent loop, routes, store, uploads, `_common` helpers) pass. That red/green split is
+  the workshop's progress meter, not breakage.
+- The app boots and streams immediately; tool calls return `NotImplementedError` errors until
+  implemented (tool_executor surfaces them as `source: "error"`).
+- The **frontend** still carries the upstream finance-demo's NAV visualization components —
+  generic streaming works, domain viz does not yet match loan underwriting (follow-up).
+  `frontend/e2e/*.spec.ts` are inherited NAV Playwright tests, not part of backend `pytest`.
 - Three years of financials is a hard validation rule; `charlie_retail` (2 years)
   intentionally exercises the error path.
 
