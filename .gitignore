@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+
+# Node
+node_modules/
+.next/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Generated synthetic data (commit the scripts, not the 40MB+ output)
+backend/data/synthetic/*.xlsx
+backend/data/synthetic/*.csv
+backend/data/synthetic/*.pdf
+
+# Runtime data
+backend/data/uploads/*
+!backend/data/uploads/.gitkeep
+backend/data/processed/*
+!backend/data/processed/.gitkeep
+backend/data/fallbacks/*
+!backend/data/fallbacks/.gitkeep
+
+# Docker
+docker-compose.override.yml
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+frontend/test-results/
+frontend/playwright-report/
+
+# Deploy secrets
+deploy/.htpasswd
+deploy/security-allowlist.conf
+
+# Playwright MCP
+.playwright-mcp/
+
+# Screenshots (Playwright testing artifacts)
+*.png
+!frontend/public/*.png
+.trees

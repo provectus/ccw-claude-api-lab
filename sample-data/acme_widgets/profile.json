@@ -1,0 +1,12 @@
+{
+  "borrower_id": "ACME-0001",
+  "business_name": "Acme Widgets Manufacturing",
+  "industry_naics": "333249",
+  "requested_amount": 750000,
+  "requested_term_months": 60,
+  "purpose": "equipment",
+  "collateral": {
+    "type": "equipment",
+    "appraised_value": 1100000
+  }
+}

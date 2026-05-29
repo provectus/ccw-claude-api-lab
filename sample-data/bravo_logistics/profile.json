@@ -1,0 +1,8 @@
+{
+  "borrower_id": "BRAVO-0007",
+  "business_name": "Bravo Logistics LLC",
+  "industry_naics": "488510",
+  "requested_amount": 1200000,
+  "requested_term_months": 36,
+  "purpose": "working_capital"
+}

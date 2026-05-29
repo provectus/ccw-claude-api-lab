@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAV Review Analyst — Documentation</title>
+  <style>
+    :root { --navy: #0A1628; --blue: #1565C0; --blue-light: #42A5F5; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1A1A2E; background: #FAFAFA; line-height: 1.6; }
+    .header { background: linear-gradient(135deg, var(--navy), #1A2744); color: white; padding: 3rem 2rem; text-align: center; }
+    .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .header p { opacity: 0.85; font-size: 1.1rem; }
+    .content { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+    h2 { color: var(--blue); margin: 2rem 0 1rem; font-size: 1.4rem; border-bottom: 2px solid #E0E0E0; padding-bottom: 0.3rem; }
+    h3 { margin: 1.5rem 0 0.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.6rem 0.8rem; border: 1px solid #E0E0E0; text-align: left; font-size: 0.9rem; }
+    th { background: #F5F5F5; font-weight: 600; }
+    code { background: #F0F0F0; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem; }
+    .step { background: white; border: 1px solid #E0E0E0; border-radius: 8px; padding: 1.2rem; margin: 0.8rem 0; }
+    .step-num { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: white; text-align: center; line-height: 28px; font-weight: 700; font-size: 0.85rem; margin-right: 0.5rem; }
+    .footer { text-align: center; padding: 2rem; color: #888; font-size: 0.85rem; border-top: 1px solid #E0E0E0; margin-top: 3rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>NAV Review Analyst</h1>
+    <p>AI-powered NAV review and exception prioritization for fund administration</p>
+  </div>
+
+  <div class="content">
+    <h2>Overview</h2>
+    <p>
+      The NAV Review Analyst is an agentic AI application that reviews Net Asset Value calculations
+      for fund administration clients. It detects anomalies dynamically, investigates exceptions,
+      and produces structured review packs for the 4-eye approval process — reducing manual review
+      time by 30-60% while maintaining or improving control quality.
+    </p>
+
+    <h2>How It Works</h2>
+    <p>Claude Sonnet 4.6 autonomously orchestrates 8 review tools via the Anthropic tool-use API:</p>
+
+    <div class="step"><span class="step-num">1</span><strong>Ingest NAV Package</strong> — Parse uploaded XLSX/CSV files containing positions, pricing, and cash flows</div>
+    <div class="step"><span class="step-num">2</span><strong>Build Fund Profile</strong> — Classify fund type, risk tier, share classes, and AUM</div>
+    <div class="step"><span class="step-num">3</span><strong>Extract Market Context</strong> — Read market commentary PDF for index, sector, and FX context</div>
+    <div class="step"><span class="step-num">4</span><strong>Detect Anomalies</strong> — Dynamic anomaly detection using per-fund learned baselines (z-scores)</div>
+    <div class="step"><span class="step-num">5</span><strong>Cross-Validate NAV</strong> — Compare NAV against prior periods, peer funds, and market benchmarks</div>
+    <div class="step"><span class="step-num">6</span><strong>Analyze Position Drivers</strong> — Drill into position-level P&amp;L contributors and stale prices</div>
+    <div class="step"><span class="step-num">7</span><strong>Score Exceptions</strong> — Prioritize all exceptions by materiality, recurrence, and risk</div>
+    <div class="step"><span class="step-num">8</span><strong>Generate Review Pack</strong> — Produce the final review pack with approval recommendation</div>
+
+    <h2>NAV Review Process (BO-8/9/10)</h2>
+    <table>
+      <tr><th>Stage</th><th>Description</th><th>AI Role</th></tr>
+      <tr><td><strong>BO-8</strong></td><td>NAV & Unit Price Calculation</td><td>Receives computed NAV data as input</td></tr>
+      <tr><td><strong>BO-9</strong></td><td>Review & Exception Analysis</td><td>Primary focus — anomaly detection, cross-validation, exception triage</td></tr>
+      <tr><td><strong>BO-10</strong></td><td>NAV Approval & Release</td><td>Produces review pack for human 4-eye approval</td></tr>
+    </table>
+
+    <h2>Recommendations</h2>
+    <table>
+      <tr><th>Recommendation</th><th>Meaning</th></tr>
+      <tr><td><strong>APPROVE</strong></td><td>All checks pass, all variances explainable, no material exceptions</td></tr>
+      <tr><td><strong>APPROVE WITH EXCEPTIONS</strong></td><td>NAV materially correct but has flagged items requiring documentation or follow-up</td></tr>
+      <tr><td><strong>ESCALATE</strong></td><td>Material unexplained variances or potential pricing errors requiring senior review</td></tr>
+      <tr><td><strong>HOLD</strong></td><td>Insufficient data to form recommendation — NAV should not be released</td></tr>
+    </table>
+
+    <h2>Demo Scenario</h2>
+    <p>
+      The demo includes a pre-loaded scenario for the <strong>Apex Multi-Strategy Fund</strong> ($847M AUM),
+      a multi-strategy hedge fund with ~200 positions across equity, fixed income, derivatives, and private credit.
+    </p>
+    <table>
+      <tr><th>File</th><th>Content</th></tr>
+      <tr><td><code>demo_nav_package.xlsx</code></td><td>198 positions, 3 share classes (USD/EUR/GBP), fees, cash flows</td></tr>
+      <tr><td><code>demo_nav_history.csv</code></td><td>12 months of daily NAV per share for baseline anomaly detection</td></tr>
+      <tr><td><code>demo_benchmarks.csv</code></td><td>S&amp;P 500, HFRI, Barclays Agg, MSCI EAFE daily returns</td></tr>
+      <tr><td><code>demo_market_commentary.pdf</code></td><td>Year-end market commentary with index, sector, credit, and FX data</td></tr>
+    </table>
+
+    <h3>Seeded Anomalies</h3>
+    <table>
+      <tr><th>Anomaly</th><th>Severity</th><th>Description</th></tr>
+      <tr><td>Large position swing</td><td>Critical</td><td>Apple Inc +185 bps contribution driven by product launch catalyst</td></tr>
+      <tr><td>FX rate mismatch</td><td>Critical</td><td>EUR/USD rate 0.8% off from Bloomberg close (1.0756 vs 1.0842)</td></tr>
+      <tr><td>Stale private credit</td><td>Critical</td><td>Venture Lending Fund III priced with 46-day-old valuation</td></tr>
+      <tr><td>Fee accrual deviation</td><td>Warning</td><td>Performance fee $1.2M vs expected $0.9M (year-end crystallization)</td></tr>
+      <tr><td>Elevated cash</td><td>Warning</td><td>Cash at 18.2% of NAV (2.3 std dev above mean) — year-end redemption reserves</td></tr>
+      <tr><td>Concentration drift</td><td>Warning</td><td>Top 5 positions at 42% vs 35% average — equity rally effect</td></tr>
+    </table>
+    <p>Target outcome: <strong>APPROVE WITH EXCEPTIONS</strong> — demonstrates the AI correctly triaging real issues while approving the NAV overall.</p>
+  </div>
+
+  <div class="footer">
+    NAV Review Analyst &mdash; Built by <a href="https://provectus.com/" target="_blank">Provectus</a>
+  </div>
+</body>
+</html>
