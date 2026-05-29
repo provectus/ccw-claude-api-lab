@@ -6,9 +6,11 @@ tool-use loop that parses a borrower package, validates it against credit policy
 computes credit ratios, and produces a structured creditworthiness assessment — no
 hardcoded step sequence, the model decides which tool to call next.
 
-> This `main` branch is the **finished reference**. Workshop starter branches
-> (`finance`, …) carry the same scaffold with `execute()` bodies stubbed out as
-> fill-in-the-blank TODOs. The workshop content lives in the
+> **Branch convention:** each industry has an `<industry>-solution` reference branch and an
+> `<industry>` fill-in-the-blank starter (e.g. `finance-solution` + `finance`,
+> `healthcare-solution` + `healthcare`). This `main` branch currently **mirrors
+> `finance-solution`** (the loan-underwriting reference) and is slated to become a distinct
+> domain long-term (see the project plan). Workshop content lives in the
 > [`cc-workshop`](https://github.com/provectus) platform.
 
 Built by [Provectus](https://provectus.com/).

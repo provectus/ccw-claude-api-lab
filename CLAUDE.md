@@ -9,10 +9,12 @@ frontend wired over SSE.
 
 See [README.md](README.md) for setup, the tool list, and sample data.
 
-This `main` branch is the **finished reference**. Workshop starter branches stub the tool
-`execute()` bodies as fill-in-the-blank TODOs. Scaffolding was lifted from the
-`finance-demo` (NAV Review Analyst) architecture and the domain layer rewritten for loan
-underwriting.
+**Branch convention:** each industry has an `<industry>-solution` reference branch + an
+`<industry>` fill-in-the-blank starter (`finance-solution`+`finance`,
+`healthcare-solution`+`healthcare`). This `main` branch currently **mirrors `finance-solution`**
+(loan-underwriting reference); it is slated to become a distinct domain long-term (e.g. an
+investment-fundamentals analysis tool — see the project plan). Scaffolding was lifted from the
+`finance-demo` (NAV Review Analyst) architecture and the domain layer rewritten for loan underwriting.
 
 ## File Structure
 
