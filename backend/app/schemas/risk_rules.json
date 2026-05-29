@@ -1,14 +1,13 @@
 {
   "schema_version": "1.0",
   "name": "contract_risk_rules",
-  "description": "Parameters for evaluate_clause_risk, reviewing from the CUSTOMER's perspective. The tool applies a fixed set of checks using these thresholds and required-clause list.",
-  "auto_renewal_notice_days_threshold": 30,
-  "required_clauses": ["liability_cap", "indemnification", "termination", "confidentiality"],
-  "severity_order": ["low", "medium", "high"],
-  "notes": {
-    "auto_renewal_trap": "Auto-renewal with a notice window at or above the threshold is a high-risk trap for the customer.",
-    "one_sided_indemnity": "Indemnification that is not mutual favors the vendor.",
-    "no_customer_termination": "Customer cannot terminate for convenience.",
-    "no_liability_cap": "No limitation-of-liability clause present."
-  }
+  "description": "Parameters for evaluate_clause_risk (Step 8), reviewing from the CUSTOMER's perspective.",
+  "_TODO_step_4": [
+    "Set auto_renewal_notice_days_threshold (e.g. 30): a notice window at/above this is the high-risk trap.",
+    "List required_clauses that must be present (e.g. liability_cap, indemnification, termination, confidentiality).",
+    "The `legal-solution` branch holds the reference values."
+  ],
+  "auto_renewal_notice_days_threshold": null,
+  "required_clauses": [],
+  "severity_order": ["low", "medium", "high"]
 }

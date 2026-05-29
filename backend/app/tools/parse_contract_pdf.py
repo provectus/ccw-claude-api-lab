@@ -97,27 +97,18 @@ def _extract_with_llamaparse(path: Path) -> str:
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Extract contract text via the chosen method (default: Claude native PDF)."""
-    path = Path(input_data["file_path"])
-    if not path.exists():
-        return {"error": f"Contract PDF not found: {path}"}
-    method = input_data.get("method", "claude")
+    """Extract contract text via the chosen method (default: Claude native PDF).
 
-    try:
-        if method == "claude":
-            text = await _extract_with_claude(path, settings)
-        elif method == "docling":
-            text = _extract_with_docling(path)
-        elif method == "llamaparse":
-            text = _extract_with_llamaparse(path)
-        else:
-            return {"error": f"Unknown method: {method}"}
-    except Exception as exc:  # surface a clean tool error to the agent
-        return {"error": f"{method} extraction failed: {exc}"}
+    TODO (Step 6 — Build Tool 1):
+      1. Resolve `input_data["file_path"]`; return {"error": ...} if it doesn't exist.
+      2. Read `input_data.get("method", "claude")` and dispatch to the provided helpers:
+         "claude" → `await _extract_with_claude(path, settings)` (native PDF document block),
+         "docling" → `_extract_with_docling(path)`, "llamaparse" → `_extract_with_llamaparse(path)`.
+         Wrap the call in try/except and return a clean {"error": ...} on failure.
+      3. Return safe_json_serialize({text, method, char_count, source_file}).
 
-    return safe_json_serialize({
-        "text": text,
-        "method": method,
-        "char_count": len(text),
-        "source_file": path.name,
-    })
+    Read `_extract_with_claude` below to see how the native-PDF `document` block is built.
+    See tests/test_legal_tools.py::TestParseContractPdf for the contract; the reference is on
+    the `legal-solution` branch.
+    """
+    raise NotImplementedError("TODO (Step 6): implement parse_contract_pdf")

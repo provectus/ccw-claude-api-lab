@@ -49,39 +49,17 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Validate and assemble the final review memo. Deterministic — no model call."""
-    recommendation = input_data.get("recommendation")
-    validation_notes: list[str] = []
+    """Validate and assemble the final review memo. Deterministic — no model call.
 
-    if recommendation not in _RECOMMENDATIONS:
-        return {"error": f"recommendation must be one of {sorted(_RECOMMENDATIONS)}, got {recommendation!r}"}
+    TODO (Step 9 — Build Tool 4):
+      This is the agent's FINAL tool — its return becomes the pipeline assessment.
+      1. Reject an out-of-enum `recommendation` (not in _RECOMMENDATIONS) with {"error": ...}.
+      2. Note an out-of-enum `overall_risk` (not in _RISK_LEVELS) in validation_notes.
+      3. Coerce + clamp `confidence` into [0, 1], noting any clamp.
+      4. Flag a negotiate/reject with no `recommended_redlines`, and a high-risk `approve`.
+      5. Return safe_json_serialize({recommendation, overall_risk, summary, flagged_clauses,
+         recommended_redlines, confidence, validation_notes}).
 
-    overall_risk = input_data.get("overall_risk")
-    if overall_risk not in _RISK_LEVELS:
-        validation_notes.append(f"overall_risk {overall_risk!r} is not one of {sorted(_RISK_LEVELS)}")
-
-    confidence = input_data.get("confidence", 0.0)
-    try:
-        confidence = float(confidence)
-    except (TypeError, ValueError):
-        confidence = 0.0
-    if confidence < 0 or confidence > 1:
-        validation_notes.append(f"confidence {confidence} clamped to [0, 1]")
-        confidence = max(0.0, min(1.0, confidence))
-
-    redlines = input_data.get("recommended_redlines") or []
-    if recommendation in ("negotiate", "reject") and not redlines:
-        validation_notes.append(f"{recommendation} returned with no recommended_redlines")
-
-    if overall_risk == "high" and recommendation == "approve":
-        validation_notes.append("high overall_risk with an 'approve' recommendation — reconsider")
-
-    return safe_json_serialize({
-        "recommendation": recommendation,
-        "overall_risk": overall_risk,
-        "summary": input_data.get("summary", ""),
-        "flagged_clauses": input_data.get("flagged_clauses") or [],
-        "recommended_redlines": redlines,
-        "confidence": round(confidence, 2),
-        "validation_notes": validation_notes,
-    })
+    See tests/test_legal_tools.py::TestGenerateReviewMemo for the contract.
+    """
+    raise NotImplementedError("TODO (Step 9): implement generate_review_memo")

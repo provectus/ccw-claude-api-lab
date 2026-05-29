@@ -9,10 +9,13 @@ React 19 frontend over SSE.
 
 See [README.md](README.md) for setup, the tool list, and sample data.
 
-**This is the `legal-solution` branch — the finished reference / answer key.** The **`legal`**
-starter branch stubs the four tool `execute()` bodies, the system prompt, and the schemas as
-fill-in-the-blank TODOs. Plumbing is shared with `main` (loan), `finance`, `healthcare`, and
-`retail`; only the domain layer differs.
+**This is the `legal` STARTER branch.** The four tool `execute()` bodies are
+`NotImplementedError` TODOs, and `prompts/contract_reviewer.md` + the three `schemas/*.json`
+files are fill-in-the-blank skeletons (search `TODO` / `_TODO_step_4`). `NAME`/`DEFINITION`, the
+agent loop, registry, `_common` helpers, the `parse_contract_pdf._extract_*` helpers, sample
+data, and tests are in place. The finished reference is on the **`legal-solution`** branch.
+Plumbing is shared with `main` (loan), `finance`, `healthcare`, and `retail`; only the domain
+layer differs.
 
 ## Dev Commands
 
@@ -46,6 +49,10 @@ cd ../frontend && npm install && npm run dev   # :3000
 
 ## Status / Gotchas
 
+- **Starter branch:** `pytest` is intentionally partly red out of the box — `test_legal_tools.py`
+  and the schema-loader tests fail until the learner implements Steps 4–9. The plumbing tests pass.
+  That red/green split is the workshop's progress meter, not breakage.
+- The app boots and streams immediately; tool calls return `NotImplementedError` until implemented.
 - `parse_contract_pdf`'s unit test mocks `anthropic.AsyncAnthropic`, so `pytest` stays offline;
   a real run / the integration test needs `ANTHROPIC_API_KEY`.
 - `extract_clauses` is heuristic (regex over headings) — the sample MSAs use clean numbered

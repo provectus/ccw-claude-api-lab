@@ -1,16 +1,15 @@
 {
   "schema_version": "1.0",
   "name": "clause_patterns",
-  "description": "Heading keyword patterns (case-insensitive regex) extract_clauses uses to locate each clause section in the contract text.",
+  "description": "Heading keyword patterns (case-insensitive regex) extract_clauses uses to locate each clause section.",
+  "_TODO_step_4": [
+    "Fill `clauses` with each clause name → a list of heading keyword patterns.",
+    "extract_clauses (Step 7) passes each list to extract_section(text, keywords).",
+    "Cover: term, auto_renewal, payment_terms, liability_cap, indemnification, ip_assignment, termination, confidentiality, governing_law.",
+    "The `legal-solution` branch holds the reference patterns."
+  ],
   "clauses": {
-    "term": ["TERM", "TERM AND TERMINATION"],
-    "auto_renewal": ["RENEWAL", "AUTO.?RENEW", "AUTOMATIC RENEWAL"],
-    "payment_terms": ["PAYMENT", "FEES", "FEES AND PAYMENT"],
     "liability_cap": ["LIMITATION OF LIABILITY", "LIABILITY"],
-    "indemnification": ["INDEMNIF"],
-    "ip_assignment": ["INTELLECTUAL PROPERTY", "OWNERSHIP", "IP RIGHTS"],
-    "termination": ["TERMINATION"],
-    "confidentiality": ["CONFIDENTIAL"],
-    "governing_law": ["GOVERNING LAW", "JURISDICTION"]
+    "_TODO": "Add term, auto_renewal, payment_terms, indemnification, ip_assignment, termination, confidentiality, governing_law."
   }
 }

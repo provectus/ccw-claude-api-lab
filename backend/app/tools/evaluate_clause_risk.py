@@ -27,61 +27,19 @@ _RANK = {"low": 1, "medium": 2, "high": 3}
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Apply the deterministic risk rules to the canonical contract."""
-    contract = input_data.get("contract") or {}
-    rules = load_risk_rules()
-    flags: list[dict] = []
+    """Apply the deterministic risk rules to the canonical contract.
 
-    def flag(clause: str, severity: str, message: str) -> None:
-        flags.append({"clause": clause, "severity": severity, "message": message})
+    TODO (Step 8 — Build Tool 3):
+      Reviewing from the CUSTOMER's perspective, build a list of flags
+      {clause, severity, message} using `load_risk_rules()`:
+        - auto_renewal present with notice_days ≥ threshold → high (the trap); else medium.
+        - liability_cap not present → high; present but excludes_consequential → low note.
+        - indemnification present but not mutual → medium; absent → medium.
+        - termination without customer_for_convenience → medium.
+        - any `required_clauses` not present (check raw_clauses / the field) → medium.
+      Then return safe_json_serialize({flags, high_count, medium_count, low_count,
+      overall_risk}) where overall_risk is the highest severity present (use _RANK).
 
-    # Auto-renewal trap
-    ar = contract.get("auto_renewal") or {}
-    if ar.get("present"):
-        notice = ar.get("notice_days")
-        threshold = rules["auto_renewal_notice_days_threshold"]
-        if notice is not None and notice >= threshold:
-            flag("auto_renewal", "high",
-                 f"Auto-renews unless cancelled with {notice} days' notice (≥ {threshold}-day trap).")
-        else:
-            flag("auto_renewal", "medium", "Contract auto-renews; track the cancellation window.")
-
-    # Liability cap
-    liab = contract.get("liability_cap") or {}
-    if not liab.get("present"):
-        flag("liability_cap", "high", "No limitation-of-liability clause found.")
-    elif liab.get("excludes_consequential"):
-        flag("liability_cap", "low",
-             "Liability cap excludes consequential damages — confirm carve-outs for IP/confidentiality.")
-
-    # Indemnification
-    ind = contract.get("indemnification") or {}
-    if ind.get("present") and not ind.get("mutual"):
-        flag("indemnification", "medium", "Indemnification is one-sided (not mutual) — favors the vendor.")
-    elif not ind.get("present"):
-        flag("indemnification", "medium", "No indemnification clause found.")
-
-    # Termination
-    term = contract.get("termination") or {}
-    if not term.get("customer_for_convenience"):
-        flag("termination", "medium", "Customer cannot terminate for convenience.")
-
-    # Required clauses present?
-    raw = contract.get("raw_clauses") or {}
-    for clause in rules["required_clauses"]:
-        present = clause in raw or (contract.get(clause) or {}).get("present")
-        if not present:
-            flag(clause, "medium", f"Required clause '{clause}' not found in the contract.")
-
-    counts = {s: sum(1 for f in flags if f["severity"] == s) for s in ("low", "medium", "high")}
-    overall = "none"
-    if flags:
-        overall = max((f["severity"] for f in flags), key=lambda s: _RANK[s])
-
-    return safe_json_serialize({
-        "flags": flags,
-        "high_count": counts["high"],
-        "medium_count": counts["medium"],
-        "low_count": counts["low"],
-        "overall_risk": overall,
-    })
+    See tests/test_legal_tools.py::TestEvaluateClauseRisk for the contract.
+    """
+    raise NotImplementedError("TODO (Step 8): implement evaluate_clause_risk")

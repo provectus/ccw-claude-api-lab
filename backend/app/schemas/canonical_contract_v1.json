@@ -1,45 +1,28 @@
 {
   "schema_version": "1.0",
   "name": "canonical_contract",
-  "description": "Canonical structure for a reviewed SaaS Master Service Agreement. parse_contract_pdf produces the contract text; extract_clauses normalizes it into this shape; downstream tools flag risk and write the memo.",
+  "description": "Canonical structure for a reviewed SaaS Master Service Agreement. parse_contract_pdf produces the text; extract_clauses normalizes it into this shape.",
+  "_TODO_step_4": [
+    "Define the full canonical shape below. The `legal-solution` branch is the answer key.",
+    "Required: parties[], term_months, auto_renewal{present, notice_days}, liability_cap{present, basis, excludes_consequential}, indemnification{present, mutual}, termination{customer_for_convenience, notice_days}.",
+    "Also: effective_date, governing_law, payment_terms{net_days}, ip_assignment{present, assigns_to}, raw_clauses{}.",
+    "Keep this file valid JSON — the /api/schemas endpoint serves it as-is."
+  ],
   "type": "object",
   "required": ["parties", "term_months", "auto_renewal", "liability_cap", "indemnification", "termination"],
   "properties": {
-    "parties": {"type": "array", "items": {"type": "string"}, "description": "Contracting parties."},
-    "effective_date": {"type": "string", "description": "Effective date as written."},
-    "governing_law": {"type": "string", "description": "Governing-law jurisdiction."},
-    "term_months": {"type": "integer", "description": "Initial term length in months."},
+    "parties": {"type": "array", "items": {"type": "string"}},
     "auto_renewal": {
       "type": "object",
       "properties": {
         "present": {"type": "boolean"},
-        "notice_days": {"type": "integer", "description": "Days of notice required to prevent auto-renewal."}
+        "notice_days": {"type": "integer", "description": "TODO (Step 4): days of notice to prevent auto-renewal."}
       }
     },
-    "payment_terms": {"type": "object", "properties": {"net_days": {"type": "integer"}, "raw": {"type": "string"}}},
     "liability_cap": {
       "type": "object",
-      "properties": {
-        "present": {"type": "boolean"},
-        "basis": {"type": "string", "description": "How the cap is expressed (e.g. '12 months of fees')."},
-        "excludes_consequential": {"type": "boolean"}
-      }
+      "properties": {"present": {"type": "boolean"}, "_TODO": "Add basis (string) and excludes_consequential (bool)."}
     },
-    "indemnification": {
-      "type": "object",
-      "properties": {"present": {"type": "boolean"}, "mutual": {"type": "boolean"}}
-    },
-    "ip_assignment": {
-      "type": "object",
-      "properties": {"present": {"type": "boolean"}, "assigns_to": {"type": "string", "description": "customer | vendor | each_party | null"}}
-    },
-    "termination": {
-      "type": "object",
-      "properties": {
-        "customer_for_convenience": {"type": "boolean", "description": "Whether the customer may terminate for convenience."},
-        "notice_days": {"type": "integer"}
-      }
-    },
-    "raw_clauses": {"type": "object", "description": "Map of clause name → the raw extracted clause text."}
+    "_TODO": "Add term_months, indemnification{present,mutual}, termination{customer_for_convenience,notice_days}, payment_terms, ip_assignment, governing_law, effective_date, raw_clauses."
   }
 }
