@@ -1,5 +1,5 @@
 """
-FastAPI backend for the Claude API Lab — Commercial Loan Underwriting Agent.
+FastAPI backend for the Claude API Lab — Product Catalog Normalization Agent.
 """
 
 from contextlib import asynccontextmanager
@@ -23,8 +23,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Claude API Lab — Loan Underwriting API",
-    description="Agentic pipeline for commercial loan underwriting: parse, validate, compute ratios, and assess creditworthiness",
+    title="Claude API Lab — Catalog Normalization API",
+    description="Agentic pipeline for product-catalog normalization: parse supplier feed, validate SKUs, map taxonomy, and generate an import report",
     version="0.1.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -50,7 +50,7 @@ app.include_router(schemas.router)
 @app.get("/")
 async def root():
     return {
-        "name": "Claude API Lab — Loan Underwriting API",
+        "name": "Claude API Lab — Catalog Normalization API",
         "version": "0.1.0",
         "status": "running",
         "docs": "/api/docs",

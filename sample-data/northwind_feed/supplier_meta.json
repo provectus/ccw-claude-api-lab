@@ -1,0 +1,13 @@
+{
+  "supplier": "Northwind Trading",
+  "default_currency": "USD",
+  "column_map": {
+    "sku": "item_no",
+    "gtin": "barcode",
+    "brand": "mfr",
+    "title": "name",
+    "supplier_category": "dept",
+    "price_amount": "unit_price",
+    "price_currency": "curr"
+  }
+}

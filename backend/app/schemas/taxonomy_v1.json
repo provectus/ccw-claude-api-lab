@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "name": "canonical_taxonomy",
+  "description": "The canonical category taxonomy. map_to_canonical_taxonomy fuzzy-matches each supplier's free-text category to the closest path here. Scores: >= confident_threshold maps cleanly; >= review_threshold needs human review; below = unmapped.",
+  "confident_threshold": 88,
+  "review_threshold": 65,
+  "paths": [
+    "Apparel > Footwear",
+    "Apparel > Outerwear",
+    "Apparel > Activewear",
+    "Electronics > Audio",
+    "Electronics > Accessories",
+    "Electronics > Wearables",
+    "Home > Kitchen",
+    "Home > Furniture",
+    "Home > Decor",
+    "Sports > Fitness Equipment",
+    "Sports > Outdoor Recreation",
+    "Beauty > Skincare"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "name": "catalog_rules",
+  "description": "SKU / GTIN / price validation rules applied by validate_skus to each canonical product.",
+  "sku": {
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,39}$",
+    "description": "3–40 chars, alphanumeric plus . _ -, no leading separator."
+  },
+  "gtin": {
+    "length": 13,
+    "require_valid_check_digit": true,
+    "description": "13-digit GTIN/EAN-13 with a valid mod-10 check digit."
+  },
+  "price": {
+    "min": 0.01,
+    "max": 100000,
+    "allowed_currencies": ["USD", "EUR", "GBP", "CAD"],
+    "description": "Positive amount within range, in a supported currency."
+  },
+  "required_fields": ["sku", "gtin", "brand", "title", "supplier_category", "price"]
+}

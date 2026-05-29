@@ -156,56 +156,31 @@ async def get_pipeline_assessment(pipeline_id: str):
 
 @router.get("/scenarios", include_in_schema=True)
 async def get_scenarios():
-    """Return pre-configured demo loan packages with folder paths to sample data."""
+    """Return pre-configured demo supplier feeds with folder paths to sample data."""
     settings = get_settings()
     sample = settings.sample_data_dir
 
     return {
         "scenarios": [
             {
-                "id": "acme_widgets",
-                "name": "Acme Widgets Mfg. — Equipment Loan",
+                "id": "northwind_feed",
+                "name": "Northwind Trading — clean feed",
                 "description": (
-                    "$750K equipment loan for a profitable widget manufacturer with growing "
-                    "revenue, healthy margins, and pledged equipment collateral. Clean approve case."
+                    "A well-structured apparel/footwear feed with valid GTINs and categories "
+                    "that map cleanly to the canonical taxonomy. Mostly ready to import."
                 ),
-                "file_paths": [str(sample / "acme_widgets")],
-                "fund_metadata": {
-                    "business_name": "Acme Widgets Manufacturing",
-                    "requested_amount": 750_000,
-                    "requested_term_months": 60,
-                    "purpose": "equipment",
-                },
+                "file_paths": [str(sample / "northwind_feed")],
+                "fund_metadata": {"supplier": "Northwind Trading", "feed_format": "csv"},
             },
             {
-                "id": "bravo_logistics",
-                "name": "Bravo Logistics — Working Capital",
+                "id": "globalmart_feed",
+                "name": "GlobalMart — messy feed",
                 "description": (
-                    "$1.2M working-capital line for a freight broker with declining revenue and "
-                    "thinning coverage. Marginal — likely approve-with-conditions."
+                    "A messy multi-category feed: a bad GTIN check digit, a missing price, and "
+                    "noisy category labels that only fuzzy-match. Exercises reject + review buckets."
                 ),
-                "file_paths": [str(sample / "bravo_logistics")],
-                "fund_metadata": {
-                    "business_name": "Bravo Logistics LLC",
-                    "requested_amount": 1_200_000,
-                    "requested_term_months": 36,
-                    "purpose": "working_capital",
-                },
-            },
-            {
-                "id": "charlie_retail",
-                "name": "Charlie Retail Group — Expansion (incomplete)",
-                "description": (
-                    "$2M expansion loan with a missing year of financials — exercises the "
-                    "validation error path."
-                ),
-                "file_paths": [str(sample / "charlie_retail")],
-                "fund_metadata": {
-                    "business_name": "Charlie Retail Group",
-                    "requested_amount": 2_000_000,
-                    "requested_term_months": 84,
-                    "purpose": "expansion",
-                },
+                "file_paths": [str(sample / "globalmart_feed")],
+                "fund_metadata": {"supplier": "GlobalMart", "feed_format": "csv"},
             },
         ]
     }

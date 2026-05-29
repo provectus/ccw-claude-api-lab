@@ -1,1 +1,1 @@
-"""NAV review tool modules."""
+"""Product-catalog normalization tool modules."""

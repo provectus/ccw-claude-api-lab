@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ccw-claude-api-lab-backend"
 version = "0.1.0"
-description = "Claude API Lab — Commercial Loan Underwriting Agent (workshop backend)"
+description = "Claude API Lab — Product Catalog Normalization Agent (workshop backend)"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

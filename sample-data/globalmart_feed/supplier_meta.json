@@ -1,0 +1,13 @@
+{
+  "supplier": "GlobalMart",
+  "default_currency": "USD",
+  "column_map": {
+    "sku": "id",
+    "gtin": "ean",
+    "brand": "brand_name",
+    "title": "product_title",
+    "supplier_category": "category_text",
+    "price_amount": "price",
+    "price_currency": "currency"
+  }
+}

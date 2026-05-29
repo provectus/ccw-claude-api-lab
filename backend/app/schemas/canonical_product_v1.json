@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "name": "canonical_product",
+  "description": "Canonical structure for a normalized catalog product. parse_supplier_feed maps a supplier's raw feed rows into this shape; downstream tools validate, categorize, and report on them.",
+  "type": "object",
+  "required": ["sku", "gtin", "brand", "title", "supplier_category", "price"],
+  "properties": {
+    "sku": {"type": "string", "description": "Supplier stock-keeping unit (unique within the feed)."},
+    "gtin": {"type": "string", "description": "13-digit GTIN / EAN-13 barcode."},
+    "brand": {"type": "string"},
+    "title": {"type": "string", "description": "Product title / name."},
+    "supplier_category": {"type": "string", "description": "Raw free-text category from the supplier feed (mapped to the canonical taxonomy by map_to_canonical_taxonomy)."},
+    "canonical_category": {"type": "string", "description": "Canonical taxonomy path, filled by map_to_canonical_taxonomy (e.g. 'Apparel > Footwear')."},
+    "attributes": {"type": "object", "description": "Free-form key/value product attributes (color, size, material, ...)."},
+    "dimensions": {
+      "type": "object",
+      "properties": {
+        "length": {"type": "number"},
+        "width": {"type": "number"},
+        "height": {"type": "number"},
+        "weight": {"type": "number"},
+        "unit": {"type": "string", "description": "e.g. cm/kg or in/lb"}
+      }
+    },
+    "price": {
+      "type": "object",
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": {"type": "number"},
+        "currency": {"type": "string", "description": "ISO 4217 code, e.g. USD."}
+      }
+    },
+    "images": {"type": "array", "items": {"type": "string"}, "description": "Image URLs."}
+  }
+}

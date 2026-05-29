@@ -124,8 +124,8 @@ class TestSSEStreaming:
         events_to_emit = [
             {"type": "status", "status": "running"},
             {"type": "reasoning", "text": "Analyzing the file..."},
-            {"type": "tool_start", "tool": "parse_loan_package", "input": {}, "tool_use_id": "tu1", "step_index": 0},
-            {"type": "tool_result", "tool": "parse_loan_package", "output": {"rows": 100}, "source": "live", "tool_use_id": "tu1", "step_index": 0},
+            {"type": "tool_start", "tool": "parse_supplier_feed", "input": {}, "tool_use_id": "tu1", "step_index": 0},
+            {"type": "tool_result", "tool": "parse_supplier_feed", "output": {"rows": 100}, "source": "live", "tool_use_id": "tu1", "step_index": 0},
             {"type": "complete", "assessment": None},
         ]
 
