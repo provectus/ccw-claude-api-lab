@@ -9,10 +9,12 @@ React 19 frontend over SSE.
 
 See [README.md](README.md) for setup, the tool list, and sample data.
 
-**This is the `retail-solution` branch — the finished reference / answer key.** The **`retail`**
-starter branch stubs the four tool `execute()` bodies, the system prompt, and the schemas as
-fill-in-the-blank TODOs. Plumbing is shared with `main` (loan), `finance`, and `healthcare`;
-only the domain layer differs.
+**This is the `retail` STARTER branch.** The four tool `execute()` bodies are
+`NotImplementedError` TODOs, and `prompts/catalog_steward.md` + the three `schemas/*.json` files
+are fill-in-the-blank skeletons (search `TODO` / `_TODO_step_4`). `NAME`/`DEFINITION`, the agent
+loop, registry, `_common` helpers (`gtin_check_digit_valid`, `best_taxonomy_match`), sample data,
+and tests are in place. The finished reference is on the **`retail-solution`** branch. Plumbing is
+shared with `main` (loan), `finance`, and `healthcare`; only the domain layer differs.
 
 ## Dev Commands
 
@@ -40,13 +42,17 @@ cd ../frontend && npm install && npm run dev   # :3000
 
 ## Status / Gotchas
 
-- Backend domain layer is complete and tested; the **frontend** still carries the upstream
-  finance-demo's NAV visualization components (generic streaming works; domain viz does not).
-  `frontend/e2e/*.spec.ts` are inherited NAV Playwright tests, not part of backend `pytest`.
+- **Starter branch:** `pytest` is intentionally partly red out of the box — `test_catalog_tools.py`
+  and the schema-loader tests fail until the learner implements Steps 4–9. The plumbing tests pass.
+  That red/green split is the workshop's progress meter, not breakage.
+- The app boots and streams immediately; tool calls return `NotImplementedError` until implemented.
 - A product is "ready" only if `validate_skus` passes it AND `map_to_canonical_taxonomy` maps it
   confidently — the agent reconciles the two signals by row index / SKU.
 - `globalmart_feed` intentionally carries a bad GTIN check digit + a missing price (rejects) and
   noisy categories (review) to exercise every bucket.
+- The **frontend** still carries the upstream finance-demo's NAV visualization components
+  (generic streaming works; domain viz does not). `frontend/e2e/*.spec.ts` are inherited NAV
+  Playwright tests, not part of backend `pytest`.
 - The pipeline run-request field is still named `fund_metadata` (a generic "request metadata"
   holdover shared across all branches' plumbing).
 

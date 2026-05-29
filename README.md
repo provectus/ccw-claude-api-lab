@@ -1,81 +1,64 @@
-# Claude API Lab — Product Catalog Normalization Agent
+# Claude API Lab — Catalog Normalization (STARTER branch)
 
-Reference implementation for the **Claude API Lab** workshop (Module 2.2, retail variant). An
-agentic demo that onboards a supplier product feed into a canonical catalog: Claude drives a
-tool-use loop that parses the feed, validates SKUs/GTINs, maps free-text categories to the
-canonical taxonomy, and produces an import report — no hardcoded step sequence, the model
-decides which tool to call next.
+> **You are on the `retail` starter branch.** The structure, tool *schemas*, agent loop,
+> sample data, and tests are in place, but the tool logic, system prompt, and data schemas are
+> **fill-in-the-blank**. You implement them step by step. The finished reference is on the
+> **`retail-solution`** branch — peek if you get stuck.
 
-> This is the **`retail-solution`** branch — the finished reference / answer key for the
-> **`retail`** starter branch (whose tool bodies, prompt, and schemas are stubbed TODOs). The
-> workshop content lives in the [`cc-workshop`](https://github.com/provectus) platform.
+Build a tool-using agent that onboards a supplier product feed into a canonical catalog: Claude
+drives a tool-use loop that parses the feed, validates SKUs/GTINs, maps free-text categories to
+the canonical taxonomy, and produces an import report. Built for the **Claude API Lab** workshop
+(Module 2.2, retail variant).
 
 Built by [Provectus](https://provectus.com/).
 
-## Architecture
+## What you'll implement
 
-```
-React 19 Frontend  ◄──SSE──►  FastAPI Backend  ◄──tool use──►  Claude Sonnet 4.6
-```
+| Step | Where | What |
+|------|-------|------|
+| 4 — Schema | `backend/app/schemas/{canonical_product_v1,catalog_rules,taxonomy_v1}.json` | Fill in the product shape, validation rules, and category taxonomy (`_TODO_step_4`). |
+| 5 — Prompt | `backend/app/prompts/catalog_steward.md` | Flesh out persona, workflow, bucketing rules, output contract. |
+| 6 — Tool 1 | `backend/app/tools/parse_supplier_feed.py` | Feed + column map → canonical products. |
+| 7 — Tool 2 | `backend/app/tools/validate_skus.py` | SKU / GTIN check digit / price validation. |
+| 8 — Tool 3 | `backend/app/tools/map_to_canonical_taxonomy.py` | Fuzzy-match categories to the taxonomy. |
+| 9 — Tool 4 | `backend/app/tools/generate_import_report.py` | The final import report. |
+| 10 — Loop | `backend/app/services/agent_runner.py` | Already wired — read it to understand the loop. |
 
-The agent loop in `backend/app/services/agent_runner.py` calls Claude, dispatches each
-`tool_use` block, appends `tool_result`s, and loops until `stop_reason == "end_turn"`
-(capped at 25 iterations). The result of `generate_import_report` becomes the pipeline assessment.
+Each tool keeps its `NAME` and `DEFINITION`; only the `execute()` body is a
+`NotImplementedError` TODO. The registry already lists all four. The `_common.py` helpers
+`gtin_check_digit_valid` and `best_taxonomy_match` (rapidfuzz) are provided for Steps 7–8.
 
-## The four tools
+## Your progress meter: the tests
 
-Registered in `backend/app/tools/registry.py`:
-
-1. **`parse_supplier_feed`** — folder (`feed.csv` + `supplier_meta.json` column map) → canonical product rows.
-2. **`validate_skus`** — SKU format, **GTIN mod-10 check digit**, price, required fields → per-row issues.
-3. **`map_to_canonical_taxonomy`** — **fuzzy-matches** (rapidfuzz) each supplier category to the canonical taxonomy → mapped / needs_review / unmapped.
-4. **`generate_import_report`** — the final report (import_clean / import_with_review / hold) with ready/review/rejected counts. Its output becomes the pipeline assessment.
-
-System prompt: `backend/app/prompts/catalog_steward.md`. Schemas:
-`canonical_product_v1.json`, `catalog_rules.json`, `taxonomy_v1.json`.
-
-## Quick start
-
-### Backend (Python 3.12)
 ```bash
 cd backend
-uv venv --python 3.12 .venv && source .venv/bin/activate   # or python3.12 -m venv .venv
-uv pip install -e ".[dev]"
-cp ../.env.example ../.env       # add ANTHROPIC_API_KEY
-uvicorn app.main:app --reload --port 8000
+uv venv --python 3.12 .venv && uv pip install -e ".[dev]"
+.venv/bin/python -m pytest
 ```
 
-### Frontend
+Out of the box, the **plumbing** tests (agent loop, SSE routes, store, uploads) pass, while
+`tests/test_catalog_tools.py` and the schema-loader tests **fail** — that's your worklist.
+`tests/test_catalog_tools.py` is the exact contract for each tool.
+
+## Run it
+
 ```bash
-cd frontend && npm install && npm run dev   # http://localhost:3000
+cd backend
+cp ../.env.example ../.env        # add ANTHROPIC_API_KEY
+.venv/bin/uvicorn app.main:app --reload --port 8000
+cd ../frontend && npm install && npm run dev      # http://localhost:3000
+# or both: docker compose up --build
 ```
 
-### Docker (both)
-```bash
-cp .env.example .env && docker compose up --build
-```
+The app boots immediately; until you implement the tools, a pipeline run streams the agent's
+reasoning then surfaces tool errors (`NotImplementedError`). Each step you finish makes the
+corresponding tool real.
 
 ## Sample data
 
 Two supplier feeds under `sample-data/`, surfaced via `GET /api/pipeline/scenarios`:
 
-| Feed | Expected outcome |
-|------|------------------|
-| `northwind_feed` | **import_clean** — 3 valid products, all categories map confidently |
-| `globalmart_feed` | **import_with_review / hold** — 1 bad GTIN + 1 missing price (rejected), 2 low-confidence categories (review) |
-
-## Tests
-
-```bash
-cd backend
-.venv/bin/python -m pytest                    # unit + route tests
-.venv/bin/python -m pytest -m integration     # full agentic loop (needs ANTHROPIC_API_KEY)
-```
-
-## Status notes
-
-- The **backend** domain layer (tools, schemas, prompt, agent loop, sample data, tests) is the
-  workshop's teaching core and is fully implemented and tested here.
-- The **frontend** streams the agent's reasoning and tool calls generically; its
-  domain-specific visualization components are inherited from the upstream finance demo and are
-  not retailored to catalog normalization (tracked as follow-up; not on the core path).
+| Feed | Expected outcome (once implemented) |
+|------|-------------------------------------|
+| `northwind_feed` | **import_clean** — valid products, categories map confidently |
+| `globalmart_feed` | **import_with_review / hold** — bad GTIN + missing price (reject), fuzzy categories (review) |

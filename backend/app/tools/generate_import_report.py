@@ -42,39 +42,17 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Validate and assemble the final import report. Deterministic — no model call."""
-    recommendation = input_data.get("recommendation")
-    validation_notes: list[str] = []
+    """Validate and assemble the final import report. Deterministic — no model call.
 
-    if recommendation not in _RECOMMENDATIONS:
-        return {"error": f"recommendation must be one of {sorted(_RECOMMENDATIONS)}, got {recommendation!r}"}
+    TODO (Step 9 — Build Tool 4):
+      This is the agent's FINAL tool — its return becomes the pipeline assessment.
+      1. Reject an out-of-enum `recommendation` (not in _RECOMMENDATIONS) with {"error": ...}.
+      2. Coerce + clamp `confidence` into [0, 1], noting any clamp.
+      3. Read ready/needs_review/rejected counts (ints); flag an `import_clean`
+         recommendation that has non-zero review/rejected counts.
+      4. Return safe_json_serialize({recommendation, ready_count, needs_review_count,
+         rejected_count, total_evaluated, summary, top_issues, confidence, validation_notes}).
 
-    confidence = input_data.get("confidence", 0.0)
-    try:
-        confidence = float(confidence)
-    except (TypeError, ValueError):
-        confidence = 0.0
-    if confidence < 0 or confidence > 1:
-        validation_notes.append(f"confidence {confidence} clamped to [0, 1]")
-        confidence = max(0.0, min(1.0, confidence))
-
-    ready = int(input_data.get("ready_count", 0) or 0)
-    review = int(input_data.get("needs_review_count", 0) or 0)
-    rejected = int(input_data.get("rejected_count", 0) or 0)
-
-    if recommendation == "import_clean" and (review or rejected):
-        validation_notes.append(
-            "import_clean recommended despite non-zero needs_review/rejected counts"
-        )
-
-    return safe_json_serialize({
-        "recommendation": recommendation,
-        "ready_count": ready,
-        "needs_review_count": review,
-        "rejected_count": rejected,
-        "total_evaluated": ready + review + rejected,
-        "summary": input_data.get("summary", ""),
-        "top_issues": input_data.get("top_issues") or [],
-        "confidence": round(confidence, 2),
-        "validation_notes": validation_notes,
-    })
+    See tests/test_catalog_tools.py::TestGenerateImportReport for the contract.
+    """
+    raise NotImplementedError("TODO (Step 9): implement generate_import_report")

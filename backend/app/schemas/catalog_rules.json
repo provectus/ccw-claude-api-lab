@@ -2,20 +2,16 @@
   "schema_version": "1.0",
   "name": "catalog_rules",
   "description": "SKU / GTIN / price validation rules applied by validate_skus to each canonical product.",
-  "sku": {
-    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,39}$",
-    "description": "3–40 chars, alphanumeric plus . _ -, no leading separator."
-  },
-  "gtin": {
-    "length": 13,
-    "require_valid_check_digit": true,
-    "description": "13-digit GTIN/EAN-13 with a valid mod-10 check digit."
-  },
-  "price": {
-    "min": 0.01,
-    "max": 100000,
-    "allowed_currencies": ["USD", "EUR", "GBP", "CAD"],
-    "description": "Positive amount within range, in a supported currency."
-  },
-  "required_fields": ["sku", "gtin", "brand", "title", "supplier_category", "price"]
+  "_TODO_step_4": [
+    "Fill in the rule values below. validate_skus (Step 7) reads them via load_catalog_rules().",
+    "sku.pattern: a regex for acceptable SKU strings.",
+    "gtin.length (13) and require_valid_check_digit (true).",
+    "price.min / price.max / allowed_currencies[].",
+    "required_fields[].",
+    "The `retail-solution` branch holds the reference values."
+  ],
+  "sku": {"pattern": null, "description": "TODO: SKU format regex."},
+  "gtin": {"length": 13, "require_valid_check_digit": true},
+  "price": {"min": null, "max": null, "allowed_currencies": []},
+  "required_fields": []
 }

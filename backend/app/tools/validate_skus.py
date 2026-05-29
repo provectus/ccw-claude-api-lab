@@ -30,48 +30,16 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Apply catalog_rules.json to each product."""
-    products = input_data.get("products") or []
-    rules = load_catalog_rules()
-    issues = []
+    """Apply catalog_rules.json to each product.
 
-    for idx, p in enumerate(products):
-        errors: list[str] = []
+    TODO (Step 7 — Build Tool 2):
+      1. Load the rules: `rules = load_catalog_rules()`.
+      2. For each product, collect errors: missing required fields, SKU failing the
+         format regex, GTIN failing `gtin_check_digit_valid()` (the helper is imported),
+         missing/out-of-range price amount, unsupported currency.
+      3. Collect per-row issues as {index, sku, errors} for any product with errors.
+      4. Return safe_json_serialize({total, valid_count, invalid_count, issues, all_valid}).
 
-        # Required fields present (price handled separately).
-        for field in rules["required_fields"]:
-            if field == "price":
-                continue
-            if not p.get(field):
-                errors.append(f"missing {field}")
-
-        sku = str(p.get("sku", ""))
-        if sku and not re.match(rules["sku"]["pattern"], sku):
-            errors.append(f"sku '{sku}' fails format rule")
-
-        gtin = str(p.get("gtin", ""))
-        if rules["gtin"]["require_valid_check_digit"] and not gtin_check_digit_valid(gtin):
-            errors.append(f"gtin '{gtin}' is not a valid 13-digit GTIN")
-
-        price = p.get("price") or {}
-        amount = price.get("amount")
-        p_rule = rules["price"]
-        if amount is None:
-            errors.append("price.amount is missing")
-        elif not (p_rule["min"] <= amount <= p_rule["max"]):
-            errors.append(f"price.amount {amount} outside [{p_rule['min']}, {p_rule['max']}]")
-        if price.get("currency") not in p_rule["allowed_currencies"]:
-            errors.append(f"price.currency '{price.get('currency')}' not supported")
-
-        if errors:
-            issues.append({"index": idx, "sku": sku or None, "errors": errors})
-
-    invalid = len(issues)
-    total = len(products)
-    return safe_json_serialize({
-        "total": total,
-        "valid_count": total - invalid,
-        "invalid_count": invalid,
-        "issues": issues,
-        "all_valid": invalid == 0,
-    })
+    See tests/test_catalog_tools.py::TestValidateSkus for the contract.
+    """
+    raise NotImplementedError("TODO (Step 7): implement validate_skus")

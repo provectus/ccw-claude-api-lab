@@ -28,41 +28,19 @@ DEFINITION = {
 
 
 async def execute(input_data: dict, settings: Settings) -> dict:
-    """Fuzzy-match supplier_category → canonical taxonomy path for each product."""
-    products = input_data.get("products") or []
-    taxonomy = load_taxonomy()
-    paths = taxonomy["paths"]
-    confident = taxonomy["confident_threshold"]
-    review = taxonomy["review_threshold"]
+    """Fuzzy-match supplier_category → canonical taxonomy path for each product.
 
-    results = []
-    mapped = needs_review = unmapped = 0
-    for idx, p in enumerate(products):
-        raw = str(p.get("supplier_category", ""))
-        best, score = best_taxonomy_match(raw, paths)
-        if score >= confident:
-            status = "mapped"
-            mapped += 1
-        elif score >= review:
-            status = "needs_review"
-            needs_review += 1
-        else:
-            status = "unmapped"
-            unmapped += 1
-            best = None
-        results.append({
-            "index": idx,
-            "sku": p.get("sku") or None,
-            "supplier_category": raw,
-            "canonical_category": best,
-            "score": round(score, 1),
-            "status": status,
-        })
+    TODO (Step 8 — Build Tool 3):
+      1. Load the taxonomy: `tax = load_taxonomy()` → `paths`, `confident_threshold`,
+         `review_threshold`.
+      2. For each product, fuzzy-match its `supplier_category` with
+         `best_taxonomy_match(raw, paths)` → (best_path, score). Bucket by status:
+         score ≥ confident → 'mapped'; ≥ review → 'needs_review'; else 'unmapped'
+         (set canonical_category to None when unmapped).
+      3. Return safe_json_serialize({results[{index, sku, supplier_category,
+         canonical_category, score, status}], mapped_count, needs_review_count,
+         unmapped_count, total}).
 
-    return safe_json_serialize({
-        "results": results,
-        "mapped_count": mapped,
-        "needs_review_count": needs_review,
-        "unmapped_count": unmapped,
-        "total": len(products),
-    })
+    See tests/test_catalog_tools.py::TestMapToCanonicalTaxonomy for the contract.
+    """
+    raise NotImplementedError("TODO (Step 8): implement map_to_canonical_taxonomy")
